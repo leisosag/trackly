@@ -1,18 +1,21 @@
-import "./App.css";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { increment, decrement } from "@/store/features/expenseSlice";
+import { Routes, Route } from "react-router-dom";
+import DashboardPage from "@/pages/DashboardPage";
+import ListPage from "@/pages/ListPage";
+import BaseLayout from "@/components/layout/BaseLayout";
+import BudgetsPage from "@/pages/BudgetsPage";
+import SettingsPage from "@/pages/SettingsPage";
 
 function App() {
-  const dispatch = useAppDispatch();
-  const count = useAppSelector((state) => state.expense.value);
   return (
     <>
-      <div>
-        <h1>Trackly</h1>
-        <p>Count: {count}</p>
-        <button onClick={() => dispatch(increment())}>+1</button>
-        <button onClick={() => dispatch(decrement())}>-1</button>
-      </div>
+      <Routes>
+        <Route element={<BaseLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="/expenses" element={<ListPage />} />
+          <Route path="/budgets" element={<BudgetsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Route>
+      </Routes>
     </>
   );
 }

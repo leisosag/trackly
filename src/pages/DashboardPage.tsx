@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { increment, decrement } from "@/store/features/expenseSlice";
-import Card from "@/components/Card";
-import Expense from "@/components/Expense";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMoneyBill, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const DashboardPage = () => {
   const dispatch = useAppDispatch();
@@ -16,23 +16,49 @@ const DashboardPage = () => {
     //   </div>
     // </div>
     <section className="h-full flex flex-col min-h-0 gap-y-4 pb-4">
-      {/* disponible */}
-      <header className="shrink-0">
-        <h2 className="text-xl font-bold">6.000</h2>
-        <p>Egresos: 3.000.000</p>
-        <p>Ingresos: 4.000.000</p>
-      </header>
-      {/* gastos por dia */}
-      <div className="flex-1 overflow-y-auto space-y-2">
-        {[...Array(5)].map((_, i) => (
-          <Card key={i} title="02 ago 2025" description="ingreso">
-            <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
-              <Expense title="Servicios" details="Contadora" amount={30000} />
-              <Expense title="Servicios" details="Contadora" amount={30000} />
-              <Expense title="Servicios" details="Contadora" amount={30000} />
+      <div className="flex max-w-full rounded-xl bg-white shadow-sm dark:bg-neutral-900 dark:border-neutral-700 p-3">
+        <div className="flex items-center justify-between w-full mr-3">
+          <div className="flex items-center">
+            <FontAwesomeIcon icon={faMoneyBill} className="mr-4" />
+            <div>
+              <p className="text-xs">Ingresos</p>
+              <p className="text-lg font-bold">$ 3.000.000</p>
             </div>
-          </Card>
-        ))}
+          </div>
+        </div>
+        <button className="!bg-pink-600 hover:bg-pink-700 h-w-full text-white flex items-center justify-center">
+          <FontAwesomeIcon icon={faPlus} />
+        </button>
+      </div>
+
+      <div className="flex max-w-full rounded-xl bg-white shadow-sm dark:bg-neutral-900 dark:border-neutral-700 p-3">
+        <div className="flex items-center justify-between w-full mr-3">
+          <div className="flex items-center">
+            <FontAwesomeIcon icon={faMoneyBill} className="mr-4" />
+            <div>
+              <p className="text-xs">Egresos</p>
+              <p className="text-lg font-bold">$ 3.000.000</p>
+            </div>
+          </div>
+        </div>
+        <button className="!bg-pink-600 hover:bg-pink-700 h-w-full text-white flex items-center justify-center">
+          <FontAwesomeIcon icon={faPlus} />
+        </button>
+      </div>
+
+      <div className="flex max-w-full rounded-xl bg-white shadow-sm dark:bg-neutral-900 dark:border-neutral-700 p-3">
+        <div className="flex items-center justify-between w-full mr-3">
+          <div className="flex items-center">
+            <FontAwesomeIcon icon={faMoneyBill} className="mr-4" />
+            <div>
+              <p className="text-xs">Ahorros</p>
+              <p className="text-lg font-bold">$ 3.000.000</p>
+            </div>
+          </div>
+        </div>
+        <button className="!bg-pink-600 hover:bg-pink-700 h-w-full text-white flex items-center justify-center">
+          <FontAwesomeIcon icon={faPlus} />
+        </button>
       </div>
     </section>
   );

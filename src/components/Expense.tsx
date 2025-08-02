@@ -16,7 +16,7 @@ const Expense = ({ icon, title, details, amount, children }: ExpenseProps) => {
       <div className="flex items-center">
         <FontAwesomeIcon
           icon={faMoneyBill}
-          className="p-2 bg-pink-400 rounded-full mr-2"
+          className="p-2 bg-pink-600 rounded-full mr-2"
         />
         <div>
           <p className="text-base">{title}</p>

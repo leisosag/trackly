@@ -16,6 +16,7 @@ const DashboardPage = () => {
     //   </div>
     // </div>
     <section className="h-full flex flex-col min-h-0 gap-y-4 pb-4">
+      {/* tarjeta de acumulados */}
       <div className="flex max-w-full rounded-xl bg-white shadow-sm dark:bg-neutral-900 dark:border-neutral-700 p-3">
         <div className="flex items-center justify-between w-full mr-3">
           <div className="flex items-center">
@@ -31,6 +32,7 @@ const DashboardPage = () => {
         </button>
       </div>
 
+      {/* tarjeta de acumulados */}
       <div className="flex max-w-full rounded-xl bg-white shadow-sm dark:bg-neutral-900 dark:border-neutral-700 p-3">
         <div className="flex items-center justify-between w-full mr-3">
           <div className="flex items-center">
@@ -46,6 +48,7 @@ const DashboardPage = () => {
         </button>
       </div>
 
+      {/* tarjeta de acumulados */}
       <div className="flex max-w-full rounded-xl bg-white shadow-sm dark:bg-neutral-900 dark:border-neutral-700 p-3">
         <div className="flex items-center justify-between w-full mr-3">
           <div className="flex items-center">

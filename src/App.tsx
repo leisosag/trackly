@@ -4,8 +4,13 @@ import { MovementForm } from '@/features/movement-form';
 import { Fab, Modal } from '@/shared/components';
 
 function App() {
-  const { movements } = useMovements();
+  const { movements, addMovement } = useMovements();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  function handleSubmit(movement: Parameters<typeof addMovement>[0]) {
+    addMovement(movement);
+    setIsModalOpen(false);
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -26,7 +31,7 @@ function App() {
         onOpenChange={setIsModalOpen}
         title="Nuevo movimiento"
       >
-        <MovementForm />
+        <MovementForm onSubmit={handleSubmit} />
       </Modal>
     </div>
   );

@@ -3,10 +3,15 @@ import { Calculator } from './Calculator';
 import { CategoryPicker } from './CategoryPicker';
 import { getCategoryById } from '@/features/categories';
 import { getIcon, cn } from '@/shared/utils';
+import type { Movement } from '@/features/movements';
 
 type Step = 'category' | 'amount';
 
-export function MovementForm() {
+interface MovementFormProps {
+  onSubmit: (movement: Omit<Movement, 'id'>) => void;
+}
+
+export function MovementForm({ onSubmit }: MovementFormProps) {
   const [step, setStep] = useState<Step>('category');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
@@ -24,11 +29,19 @@ export function MovementForm() {
   }
 
   function handleAmountConfirm(amount: number) {
-    console.log('Movimiento a crear:', {
+    if (!selectedCategoryId) return;
+
+    onSubmit({
       categoryId: selectedCategoryId,
-      description,
+      description: description.trim() || undefined,
       amount,
+      date: new Date().toISOString(),
     });
+
+    setStep('category');
+    setSelectedCategoryId(null);
+    setDescription('');
+    setExpression('');
   }
 
   if (step === 'category') {

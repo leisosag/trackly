@@ -1,8 +1,11 @@
-import { useMovements } from './features/movements/hooks/useMovements';
-import { MovementList } from './features/movements/components/MovementList';
+import { useState } from 'react';
+import { useMovements, MovementList } from '@/features/movements';
+import { MovementForm } from '@/features/movement-form';
+import { Fab, Modal } from '@/shared/components';
 
 function App() {
   const { movements } = useMovements();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -11,9 +14,20 @@ function App() {
           Mis movimientos
         </h1>
       </header>
+
       <main>
         <MovementList movements={movements} />
       </main>
+
+      <Fab onClick={() => setIsModalOpen(true)} />
+
+      <Modal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        title="Nuevo movimiento"
+      >
+        <MovementForm />
+      </Modal>
     </div>
   );
 }

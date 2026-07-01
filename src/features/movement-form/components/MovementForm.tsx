@@ -1,7 +1,13 @@
+import { Calculator } from './Calculator';
+
 export function MovementForm() {
+  function handleAmountConfirm(amount: number) {
+    console.log('Monto confirmado:', amount);
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-sm text-neutral-500">formulario</p>
+      <Calculator onConfirm={handleAmountConfirm} />
     </div>
   );
 }

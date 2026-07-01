@@ -28,7 +28,7 @@ export function Modal({ open, onOpenChange, title, children }: ModalProps) {
               <button
                 type="button"
                 aria-label="Cerrar"
-                className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600"
+                className="rounded-full p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 hover:cursor-pointer"
               >
                 <XIcon size={20} />
               </button>

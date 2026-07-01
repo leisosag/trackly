@@ -1,8 +1,10 @@
-import { useState } from 'react';
 import { evaluateExpression } from '../utils/evaluateExpression';
 import { formatCurrency } from '@/shared/utils';
+import { CheckIcon } from '@phosphor-icons/react';
 
 interface CalculatorProps {
+  expression: string;
+  onExpressionChange: (expression: string) => void;
   onConfirm: (amount: number) => void;
 }
 
@@ -25,18 +27,20 @@ const KEYS = [
   '+',
 ];
 
-export function Calculator({ onConfirm }: CalculatorProps) {
-  const [expression, setExpression] = useState('');
-
+export function Calculator({
+  expression,
+  onExpressionChange,
+  onConfirm,
+}: CalculatorProps) {
   const result = evaluateExpression(expression);
   const isValid = result !== null && result > 0;
 
   function handleKey(key: string) {
     if (key === '⌫') {
-      setExpression((prev) => prev.slice(0, -1));
+      onExpressionChange(expression.slice(0, -1));
       return;
     }
-    setExpression((prev) => prev + key);
+    onExpressionChange(expression + key);
   }
 
   function handleConfirm() {
@@ -65,7 +69,7 @@ export function Calculator({ onConfirm }: CalculatorProps) {
             key={key}
             type="button"
             onClick={() => handleKey(key)}
-            className="rounded-lg bg-neutral-50 py-3 text-lg font-medium text-neutral-800 hover:bg-neutral-200 active:bg-neutral-300"
+            className="rounded-lg bg-neutral-50 py-3 text-lg font-medium text-neutral-800 hover:bg-neutral-200 active:bg-neutral-300 hover:cursor-pointer"
           >
             {key}
           </button>
@@ -76,9 +80,10 @@ export function Calculator({ onConfirm }: CalculatorProps) {
         type="button"
         disabled={!isValid}
         onClick={handleConfirm}
-        className="rounded-xl bg-neutral-900 py-3 font-medium text-white disabled:bg-neutral-300"
+        className="flex items-center justify-center rounded-xl bg-neutral-900 py-3 font-medium text-white disabled:bg-neutral-300 hover:cursor-pointer"
+        aria-label="guardar"
       >
-        Confirmar monto
+        <CheckIcon size={32} />
       </button>
     </div>
   );

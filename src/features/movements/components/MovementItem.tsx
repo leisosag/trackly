@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { getCategoryById } from '@/features/categories';
-import { getIcon, formatCurrency } from '@/shared/utils';
+import { getIcon, formatCurrency, cn } from '@/shared/utils';
 import type { Movement } from '../types';
 
 interface MovementItemProps {
@@ -17,7 +17,12 @@ export function MovementItem({ movement }: MovementItemProps) {
 
   return (
     <div className="flex items-center gap-3 px-4 py-3">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-neutral-100">
+      <div
+        className={cn(
+          'flex size-10 shrink-0 items-center justify-center rounded-full',
+          isIncome ? 'bg-emerald-100' : 'bg-red-100',
+        )}
+      >
         {icon}
       </div>
 
@@ -32,9 +37,7 @@ export function MovementItem({ movement }: MovementItemProps) {
         )}
       </div>
 
-      <span
-        className={`font-semibold ${isIncome ? 'text-emerald-600' : 'text-red-600'}`}
-      >
+      <span className="font-semibold">
         {isIncome ? '+' : '-'}
         {formatCurrency(movement.amount)}
       </span>

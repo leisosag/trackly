@@ -4,9 +4,13 @@ import type { Movement } from '../types';
 
 interface MovementListProps {
   movements: Movement[];
+  onMovementClick?: (movement: Movement) => void;
 }
 
-export function MovementList({ movements }: MovementListProps) {
+export function MovementList({
+  movements,
+  onMovementClick,
+}: MovementListProps) {
   const groups = groupByDay(movements);
 
   if (groups.length === 0) {
@@ -20,7 +24,11 @@ export function MovementList({ movements }: MovementListProps) {
   return (
     <div className="flex flex-col gap-4">
       {groups.map((group) => (
-        <MovementGroup key={group.date} group={group} />
+        <MovementGroup
+          key={group.date}
+          group={group}
+          onMovementClick={onMovementClick}
+        />
       ))}
     </div>
   );

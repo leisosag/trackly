@@ -26,4 +26,21 @@ export const movementsRepository = {
     writeAll([...all, newMovement]);
     return newMovement;
   },
+
+  update(id: string, updates: Omit<Movement, 'id'>): Movement | null {
+    const all = readAll();
+    const index = all.findIndex((m) => m.id === id);
+    if (index === -1) return null;
+
+    const updated: Movement = { ...updates, id };
+    const newAll = [...all];
+    newAll[index] = updated;
+    writeAll(newAll);
+    return updated;
+  },
+
+  remove(id: string): void {
+    const all = readAll();
+    writeAll(all.filter((m) => m.id !== id));
+  },
 };

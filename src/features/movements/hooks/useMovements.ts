@@ -12,5 +12,16 @@ export function useMovements() {
     setMovements((prev) => [...prev, created]);
   }
 
-  return { movements, addMovement };
+  function updateMovement(id: string, updates: Omit<Movement, 'id'>) {
+    const updated = movementsRepository.update(id, updates);
+    if (!updated) return;
+    setMovements((prev) => prev.map((m) => (m.id === id ? updated : m)));
+  }
+
+  function removeMovement(id: string) {
+    movementsRepository.remove(id);
+    setMovements((prev) => prev.filter((m) => m.id !== id));
+  }
+
+  return { movements, addMovement, updateMovement, removeMovement };
 }

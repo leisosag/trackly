@@ -89,4 +89,74 @@ describe('MovementForm', () => {
 
     expect(screen.getByText('Ingresos')).toBeInTheDocument();
   });
+
+  it('en modo edición, arranca directo en el paso de monto con los datos precargados', () => {
+    render(
+      <MovementForm
+        mode="edit"
+        initialMovement={{
+          id: '1',
+          categoryId: 'food',
+          amount: 1500,
+          description: 'Supermercado',
+          date: '2026-07-01T10:00:00.000Z',
+        }}
+        onSubmit={() => {}}
+      />,
+    );
+
+    expect(screen.getByText('Comida')).toBeInTheDocument();
+    expect(screen.getByTestId('expression-display')).toHaveTextContent('1500');
+    expect(screen.getByLabelText(/descripción/i)).toHaveValue('Supermercado');
+  });
+
+  it('en modo edición, llama a onSubmit con los datos modificados', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+
+    render(
+      <MovementForm
+        mode="edit"
+        initialMovement={{
+          id: '1',
+          categoryId: 'food',
+          amount: 1500,
+          date: '2026-07-01T10:00:00.000Z',
+        }}
+        onSubmit={handleSubmit}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ categoryId: 'food', amount: 1500 }),
+    );
+  });
+
+  it('en modo edición, requiere 2 clicks en Eliminar antes de llamar a onDelete', async () => {
+    const user = userEvent.setup();
+    const handleDelete = vi.fn();
+
+    render(
+      <MovementForm
+        mode="edit"
+        initialMovement={{
+          id: '1',
+          categoryId: 'food',
+          amount: 1500,
+          date: '2026-07-01T10:00:00.000Z',
+        }}
+        onSubmit={() => {}}
+        onDelete={handleDelete}
+      />,
+    );
+
+    const deleteButton = screen.getByRole('button', { name: /eliminar/i });
+    await user.click(deleteButton);
+    expect(handleDelete).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: /confirmar/i }));
+    expect(handleDelete).toHaveBeenCalledOnce();
+  });
 });

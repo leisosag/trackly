@@ -83,7 +83,7 @@ export function Calculator({
         className="flex items-center justify-center rounded-xl bg-neutral-900 py-3 font-medium text-white disabled:bg-neutral-300 hover:cursor-pointer"
         aria-label="guardar"
       >
-        <CheckIcon size={32} />
+        <CheckIcon size={25} />
       </button>
     </div>
   );

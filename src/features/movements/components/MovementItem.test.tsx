@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MovementItem } from './MovementItem';
 import type { Movement } from '../types';
 
@@ -43,5 +44,22 @@ describe('MovementItem', () => {
     render(<MovementItem movement={movement} />);
 
     expect(screen.getByText('Supermercado')).toBeInTheDocument();
+  });
+
+  it('llama a onClick con el movimiento al tocarlo', async () => {
+    const user = userEvent.setup();
+    const handleClick = vi.fn();
+    const movement: Movement = {
+      id: '4',
+      categoryId: 'food',
+      amount: 1500,
+      date: '2026-07-01T10:00:00.000Z',
+    };
+
+    render(<MovementItem movement={movement} onClick={handleClick} />);
+
+    await user.click(screen.getByRole('button'));
+
+    expect(handleClick).toHaveBeenCalledWith(movement);
   });
 });

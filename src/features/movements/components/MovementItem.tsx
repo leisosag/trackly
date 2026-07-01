@@ -5,9 +5,10 @@ import type { Movement } from '../types';
 
 interface MovementItemProps {
   movement: Movement;
+  onClick?: (movement: Movement) => void;
 }
 
-export function MovementItem({ movement }: MovementItemProps) {
+export function MovementItem({ movement, onClick }: MovementItemProps) {
   const category = getCategoryById(movement.categoryId);
   const icon = createElement(getIcon(category?.icon ?? ''), {
     size: 20,
@@ -16,7 +17,11 @@ export function MovementItem({ movement }: MovementItemProps) {
   const isIncome = category?.type === 'income';
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3">
+    <button
+      type="button"
+      onClick={() => onClick?.(movement)}
+      className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-neutral-100"
+    >
       <div
         className={cn(
           'flex size-10 shrink-0 items-center justify-center rounded-full',
@@ -41,6 +46,6 @@ export function MovementItem({ movement }: MovementItemProps) {
         {isIncome ? '+' : '-'}
         {formatCurrency(movement.amount)}
       </span>
-    </div>
+    </button>
   );
 }

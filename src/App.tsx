@@ -1,15 +1,32 @@
 import { useState } from 'react';
-import { useMovements, MovementList } from '@/features/movements';
+import {
+  useMovements,
+  MovementList,
+  type Movement,
+} from '@/features/movements';
 import { MovementForm } from '@/features/movement-form';
 import { Fab, Modal } from '@/shared/components';
 
-function App() {
-  const { movements, addMovement } = useMovements();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+type FormState = { mode: 'create' } | { mode: 'edit'; movement: Movement };
 
-  function handleSubmit(movement: Parameters<typeof addMovement>[0]) {
+function App() {
+  const { movements, addMovement, updateMovement, removeMovement } =
+    useMovements();
+  const [formState, setFormState] = useState<FormState | null>(null);
+
+  function handleCreate(movement: Omit<Movement, 'id'>) {
     addMovement(movement);
-    setIsModalOpen(false);
+    setFormState(null);
+  }
+
+  function handleUpdate(id: string, movement: Omit<Movement, 'id'>) {
+    updateMovement(id, movement);
+    setFormState(null);
+  }
+
+  function handleDelete(id: string) {
+    removeMovement(id);
+    setFormState(null);
   }
 
   return (
@@ -21,17 +38,37 @@ function App() {
       </header>
 
       <main>
-        <MovementList movements={movements} />
+        <MovementList
+          movements={movements}
+          onMovementClick={(movement) =>
+            setFormState({ mode: 'edit', movement })
+          }
+        />
       </main>
 
-      <Fab onClick={() => setIsModalOpen(true)} />
+      <Fab onClick={() => setFormState({ mode: 'create' })} />
 
       <Modal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        title="Nuevo movimiento"
+        open={formState !== null}
+        onOpenChange={(open) => !open && setFormState(null)}
+        title={
+          formState?.mode === 'edit' ? 'Editar movimiento' : 'Nuevo movimiento'
+        }
       >
-        <MovementForm onSubmit={handleSubmit} />
+        {formState?.mode === 'create' && (
+          <MovementForm key="create" mode="create" onSubmit={handleCreate} />
+        )}
+        {formState?.mode === 'edit' && (
+          <MovementForm
+            key={`edit-${formState.movement.id}`}
+            mode="edit"
+            initialMovement={formState.movement}
+            onSubmit={(movement) =>
+              handleUpdate(formState.movement.id, movement)
+            }
+            onDelete={() => handleDelete(formState.movement.id)}
+          />
+        )}
       </Modal>
     </div>
   );

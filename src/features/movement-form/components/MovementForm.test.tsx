@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MovementForm } from './MovementForm';
 
@@ -158,5 +158,33 @@ describe('MovementForm', () => {
 
     await user.click(screen.getByRole('button', { name: /confirmar/i }));
     expect(handleDelete).toHaveBeenCalledOnce();
+  });
+
+  it('la fecha arranca en "Hoy" por defecto al crear un movimiento nuevo', async () => {
+    const user = userEvent.setup();
+    render(<MovementForm onSubmit={() => {}} />);
+
+    await user.click(screen.getByText('Comida'));
+
+    expect(screen.getByText('Hoy')).toBeInTheDocument();
+  });
+
+  it('permite editar la fecha y la incluye en el movimiento creado', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+    render(<MovementForm onSubmit={handleSubmit} />);
+
+    await user.click(screen.getByText('Comida'));
+
+    const dateInput = screen.getByLabelText(/fecha del movimiento/i);
+    fireEvent.change(dateInput, { target: { value: '2026-07-20' } });
+
+    await user.click(screen.getByText('1'));
+    await user.click(screen.getByText('5'));
+    await user.click(screen.getByText('0'));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    const submittedDate = handleSubmit.mock.calls[0][0].date;
+    expect(submittedDate.slice(0, 10)).toBe('2026-07-20');
   });
 });

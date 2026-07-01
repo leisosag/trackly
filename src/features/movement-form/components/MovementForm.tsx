@@ -3,7 +3,14 @@ import { TrashIcon } from '@phosphor-icons/react';
 import { Calculator } from './Calculator';
 import { CategoryPicker } from './CategoryPicker';
 import { getCategoryById } from '@/features/categories';
-import { getIcon, cn } from '@/shared/utils';
+import {
+  getIcon,
+  cn,
+  getTodayInputValue,
+  isoToInputValue,
+  applyDateToIso,
+} from '@/shared/utils';
+import { DateField, DescriptionField } from '@/shared/components';
 import type { Movement } from '@/features/movements';
 
 type Step = 'category' | 'amount';
@@ -33,6 +40,11 @@ export function MovementForm({
   const [expression, setExpression] = useState(
     initialMovement ? String(initialMovement.amount) : '',
   );
+  const [dateValue, setDateValue] = useState(
+    initialMovement
+      ? isoToInputValue(initialMovement.date)
+      : getTodayInputValue(),
+  );
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const selectedCategory = selectedCategoryId
@@ -47,11 +59,13 @@ export function MovementForm({
   function handleAmountConfirm(amount: number) {
     if (!selectedCategoryId) return;
 
+    const baseIso = initialMovement?.date ?? new Date().toISOString();
+
     onSubmit({
       categoryId: selectedCategoryId,
       description: description.trim() || undefined,
       amount,
-      date: initialMovement?.date ?? new Date().toISOString(),
+      date: applyDateToIso(baseIso, dateValue),
     });
 
     if (mode === 'create') {
@@ -59,6 +73,7 @@ export function MovementForm({
       setSelectedCategoryId(null);
       setDescription('');
       setExpression('');
+      setDateValue(getTodayInputValue());
     }
   }
 
@@ -118,22 +133,8 @@ export function MovementForm({
         )}
       </div>
 
-      <div>
-        <label
-          htmlFor="description"
-          className="mb-1 block text-sm text-neutral-500"
-        >
-          Descripción (opcional)
-        </label>
-        <input
-          id="description"
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Escribir descripción..."
-          className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-400"
-        />
-      </div>
+      <DateField value={dateValue} onChange={setDateValue} />
+      <DescriptionField value={description} onChange={setDescription} />
 
       <Calculator
         expression={expression}

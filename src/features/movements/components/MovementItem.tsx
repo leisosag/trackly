@@ -11,7 +11,7 @@ interface MovementItemProps {
 export function MovementItem({ movement, onClick }: MovementItemProps) {
   const category = getCategoryById(movement.categoryId);
   const icon = createElement(getIcon(category?.icon ?? ''), {
-    size: 20,
+    size: 18,
     className: 'text-neutral-600',
   });
   const isIncome = category?.type === 'income';
@@ -20,11 +20,11 @@ export function MovementItem({ movement, onClick }: MovementItemProps) {
     <button
       type="button"
       onClick={() => onClick?.(movement)}
-      className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-neutral-100"
+      className="flex w-full items-center gap-3 p-2 text-left bg-neutral-50 hover:bg-neutral-100"
     >
       <div
         className={cn(
-          'flex size-10 shrink-0 items-center justify-center rounded-full',
+          'flex size-8 shrink-0 items-center justify-center rounded-full',
           isIncome ? 'bg-emerald-100' : 'bg-red-100',
         )}
       >

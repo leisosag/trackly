@@ -1,6 +1,8 @@
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number, showSymbol = false): string {
   return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
+    style: showSymbol ? 'currency' : 'decimal',
     currency: 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amount);
 }

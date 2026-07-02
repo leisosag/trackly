@@ -1,5 +1,5 @@
 import { evaluateExpression } from '../utils/evaluateExpression';
-import { formatCurrency } from '@/shared/utils';
+import { formatCurrency, cn } from '@/shared/utils';
 import { CheckIcon } from '@phosphor-icons/react';
 
 interface CalculatorProps {
@@ -80,7 +80,10 @@ export function Calculator({
         type="button"
         disabled={!isValid}
         onClick={handleConfirm}
-        className="flex items-center justify-center rounded-xl bg-neutral-900 py-3 font-medium text-white disabled:bg-neutral-300 hover:cursor-pointer"
+        className={cn(
+          'flex items-center justify-center rounded-xl bg-neutral-900 py-3 font-medium text-white disabled:bg-neutral-300',
+          isValid && 'hover:cursor-pointer',
+        )}
         aria-label="guardar"
       >
         <CheckIcon size={25} />

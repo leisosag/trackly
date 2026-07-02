@@ -8,3 +8,4 @@ export {
   isoToInputValue,
   applyDateToIso,
 } from './dateInput';
+export { calculateSummary, type Summary } from './calculateSummary';

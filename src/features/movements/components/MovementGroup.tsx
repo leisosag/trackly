@@ -18,11 +18,11 @@ function formatGroupDate(dateStr: string): string {
 
 export function MovementGroup({ group, onMovementClick }: MovementGroupProps) {
   return (
-    <div>
-      <h3 className="px-4 py-2 text-sm font-medium capitalize text-neutral-500">
+    <div className="px-4">
+      <h3 className="p-2 text-sm font-medium capitalize text-neutral-700 rounded-t-lg bg-neutral-200">
         {formatGroupDate(group.date)}
       </h3>
-      <div className="divide-y divide-neutral-100">
+      <div className="divide-y divide-neutral-100 overflow-hidden rounded-b-lg [&>*:last-child]:rounded-b-lg">
         {group.movements.map((movement) => (
           <MovementItem
             key={movement.id}

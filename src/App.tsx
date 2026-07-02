@@ -3,6 +3,7 @@ import { Toaster, toast } from 'sonner';
 import {
   useMovements,
   MovementList,
+  BalanceHeader,
   type Movement,
 } from '@/features/movements';
 import { MovementForm } from '@/features/movement-form';
@@ -34,7 +35,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-neutral-100">
       <Toaster
         position="top-center"
         toastOptions={{
@@ -44,11 +45,7 @@ function App() {
         }}
       />
 
-      <header className="px-4 py-6">
-        <h1 className="text-xl font-semibold text-neutral-900">
-          Mis movimientos
-        </h1>
-      </header>
+      <BalanceHeader movements={movements} />
 
       <main>
         <MovementList

@@ -47,4 +47,22 @@ describe('groupByDay', () => {
   it('devuelve un array vacío si no hay movimientos', () => {
     expect(groupByDay([])).toEqual([]);
   });
+
+  it('agrupa según el día local, no el día crudo del string UTC', () => {
+    // 23:00 hora Argentina (UTC-3) del 17/7 se guarda como 02:00 UTC del 18/7.
+    // Debe agruparse en "17", no en "18".
+    const lateNightMovement: Movement = {
+      id: '4',
+      categoryId: 'food',
+      amount: 200,
+      date: '2026-07-18T02:00:00.000Z',
+    };
+
+    const result = groupByDay([lateNightMovement]);
+
+    // Nota: este test asume que el entorno de test corre en UTC-3 (Argentina).
+    // Si corre en otro huso horario, isoToInputValue también será consistente
+    // con ese huso, así que el valor esperado podría variar en CI.
+    expect(result[0].date).toBe('2026-07-17');
+  });
 });

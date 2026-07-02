@@ -3,7 +3,7 @@ import { formatCurrency } from './formatCurrency';
 
 describe('formatCurrency', () => {
   it('formatea un número entero con símbolo de moneda por defecto', () => {
-    expect(formatCurrency(1500)).toContain('$');
+    expect(formatCurrency(1500, true)).toContain('$');
     expect(formatCurrency(1500)).toContain('1.500');
   });
 

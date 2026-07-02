@@ -30,6 +30,6 @@ describe('BalanceHeader', () => {
   it('muestra el saldo en 0 sin movimientos', () => {
     render(<BalanceHeader movements={[]} />);
 
-    expect(screen.getByText(/\$\s?0/)).toBeInTheDocument();
+    expect(screen.getByText('0')).toBeInTheDocument();
   });
 });

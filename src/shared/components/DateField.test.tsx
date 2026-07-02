@@ -2,16 +2,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateField } from './DateField';
+import { getTodayInputValue } from '@/shared/utils';
 
 describe('DateField', () => {
   beforeEach(() => {
-    // jsdom no implementa showPicker todavía; lo mockeamos para poder testear el click.
     HTMLInputElement.prototype.showPicker = vi.fn();
   });
 
   it('muestra "Hoy" cuando el valor es la fecha actual', () => {
-    const today = new Date().toISOString().slice(0, 10);
-    render(<DateField value={today} onChange={() => {}} />);
+    render(<DateField value={getTodayInputValue()} onChange={() => {}} />);
 
     expect(screen.getByText('Hoy')).toBeInTheDocument();
   });

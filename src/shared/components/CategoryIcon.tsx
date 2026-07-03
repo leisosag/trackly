@@ -3,7 +3,6 @@ import { cn, getCategoryColors, getIcon } from '../utils';
 
 type Props = {
   category: Category;
-  // size?: number;
   iconSize?: number;
   isCircle?: boolean;
   active?: boolean;
@@ -13,7 +12,6 @@ type Props = {
 
 export function CategoryIcon({
   category,
-  // size = 10,
   iconSize = 18,
   isCircle = true,
   active = false,
@@ -28,7 +26,6 @@ export function CategoryIcon({
     <div
       className={cn(
         'flex items-center justify-center',
-        // `size-${size}`,
         isCircle
           ? 'rounded-full p-3'
           : 'flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-medium transition-colors hover:cursor-pointer',

@@ -51,14 +51,14 @@ export function Calculator({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-xl bg-neutral-100 px-4 py-3 text-right">
+      <div className="rounded-xl bg-neutral-100 dark:bg-mauve-700 px-4 py-3 text-right">
         <p
           data-testid="expression-display"
-          className="min-h-6 text-sm text-neutral-500"
+          className="min-h-6 text-sm text-neutral-500 dark:text-mauve-400"
         >
           {expression || '0'}
         </p>
-        <p className="text-2xl font-semibold text-neutral-900">
+        <p className="text-2xl font-semibold text-neutral-900 dark:text-mauve-50">
           {result !== null ? formatCurrency(result) : '—'}
         </p>
       </div>
@@ -69,7 +69,7 @@ export function Calculator({
             key={key}
             type="button"
             onClick={() => handleKey(key)}
-            className="rounded-lg bg-neutral-50 py-3 text-lg font-medium text-neutral-800 hover:bg-neutral-200 active:bg-neutral-300 hover:cursor-pointer"
+            className="rounded-lg bg-neutral-50 dark:bg-mauve-700 py-2 text-base font-medium text-neutral-800 dark:text-mauve-50 hover:bg-neutral-200 dark:hover:bg-mauve-600/30 active:bg-neutral-300 hover:cursor-pointer"
           >
             {key}
           </button>
@@ -81,7 +81,7 @@ export function Calculator({
         disabled={!isValid}
         onClick={handleConfirm}
         className={cn(
-          'flex items-center justify-center rounded-xl bg-neutral-900 py-3 font-medium text-white disabled:bg-neutral-300',
+          'flex items-center justify-center rounded-xl bg-neutral-900 dark:bg-cyan-300 py-3 font-medium text-white dark:text-mauve-900 disabled:bg-neutral-300 dark:disabled:bg-mauve-400',
           isValid && 'hover:cursor-pointer',
         )}
         aria-label="guardar"

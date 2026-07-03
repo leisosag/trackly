@@ -35,7 +35,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="min-h-screen bg-neutral-100 dark:bg-mauve-950">
       <Toaster
         position="top-center"
         toastOptions={{

@@ -109,14 +109,14 @@ export function MovementForm({
               confirmingDelete ? onDelete() : setConfirmingDelete(true)
             }
             className={cn(
-              'flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium',
+              'flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium hover:cursor-pointer',
               confirmingDelete
-                ? 'bg-red-600 text-white'
-                : 'text-red-600 hover:bg-red-50',
+                ? 'bg-red-600 text-white dark:bg-rose-500/15 dark:text-rose-300 dark:border dark:border-rose-400/20'
+                : 'text-red-600 dark:text-rose-400 hover:bg-red-50 dark:hover:bg-rose-400/10',
             )}
           >
             <TrashIcon size={16} />
-            {confirmingDelete ? 'Confirmar' : 'Eliminar'}
+            {confirmingDelete ? 'Sí, eliminar' : 'Eliminar'}
           </button>
         )}
       </div>

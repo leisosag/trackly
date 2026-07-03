@@ -156,7 +156,7 @@ describe('MovementForm', () => {
     await user.click(deleteButton);
     expect(handleDelete).not.toHaveBeenCalled();
 
-    await user.click(screen.getByRole('button', { name: /confirmar/i }));
+    await user.click(screen.getByRole('button', { name: /Sí, eliminar/i }));
     expect(handleDelete).toHaveBeenCalledOnce();
   });
 

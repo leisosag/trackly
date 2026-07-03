@@ -1,6 +1,5 @@
-import { createElement } from 'react';
 import { categoriesSeed, type Category } from '@/features/categories';
-import { getIcon, cn } from '@/shared/utils';
+import { CategoryIcon } from '@/shared/components';
 
 interface CategoryPickerProps {
   selectedCategoryId: string | null;
@@ -16,21 +15,14 @@ function CategoryButton({
   isSelected: boolean;
   onSelect: (id: string) => void;
 }) {
-  const icon = createElement(getIcon(category.icon), { size: 20 });
-
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(category.id)}
-      className={cn(
-        'flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-medium transition-colors hover:cursor-pointer',
-        isSelected
-          ? 'bg-neutral-900 text-white'
-          : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200',
-      )}
-    >
-      {icon}
-      <span>{category.name}</span>
+    <button type="button" onClick={() => onSelect(category.id)}>
+      <CategoryIcon
+        category={category}
+        isCircle={false}
+        active={isSelected}
+        borderOnHover
+      />
     </button>
   );
 }

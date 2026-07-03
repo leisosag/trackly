@@ -1,16 +1,15 @@
-import { createElement, useState } from 'react';
+import { useState } from 'react';
 import { TrashIcon } from '@phosphor-icons/react';
 import { Calculator } from './Calculator';
 import { CategoryPicker } from './CategoryPicker';
 import { getCategoryById } from '@/features/categories';
 import {
-  getIcon,
   cn,
   getTodayInputValue,
   isoToInputValue,
   applyDateToIso,
 } from '@/shared/utils';
-import { DateField, DescriptionField } from '@/shared/components';
+import { CategoryIcon, DateField, DescriptionField } from '@/shared/components';
 import type { Movement } from '@/features/movements';
 
 type Step = 'category' | 'amount';
@@ -86,10 +85,6 @@ export function MovementForm({
     );
   }
 
-  const icon = selectedCategory
-    ? createElement(getIcon(selectedCategory.icon), { size: 20 })
-    : null;
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -97,19 +92,12 @@ export function MovementForm({
           type="button"
           onClick={() => setStep('category')}
           aria-label="Volver a elegir categoría"
-          className="flex w-fit items-center gap-2 rounded-full py-1 pr-3 hover:bg-neutral-100 hover:cursor-pointer"
+          className="flex w-fit items-center gap-2 rounded-full py-1 pr-3 hover:bg-neutral-100 dark:hover:bg-mauve-900/30 hover:cursor-pointer"
         >
-          <div
-            className={cn(
-              'flex size-10 items-center justify-center rounded-full text-neutral-600',
-              selectedCategory?.type === 'income'
-                ? 'bg-emerald-100'
-                : 'bg-red-100',
-            )}
-          >
-            {icon}
-          </div>
-          <span className="font-medium text-neutral-900">
+          {selectedCategory && (
+            <CategoryIcon category={selectedCategory} className="p-2" />
+          )}
+          <span className="font-medium text-neutral-900 dark:text-mauve-50">
             {selectedCategory?.name}
           </span>
         </button>

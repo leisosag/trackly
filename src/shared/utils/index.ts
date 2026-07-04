@@ -9,3 +9,5 @@ export {
   applyDateToIso,
 } from './dateInput';
 export { calculateSummary, type Summary } from './calculateSummary';
+export { getPeriodRange } from './getPeriodRange';
+export { calculateBudgetProgress } from './calculateBudgetProgress';

@@ -7,7 +7,7 @@ describe('ConfirmButton', () => {
   it('llama a onConfirm al hacer click', async () => {
     const user = userEvent.setup();
     const handleConfirm = vi.fn();
-    render(<ConfirmButton onConfirm={handleConfirm} isValid />);
+    render(<ConfirmButton onConfirm={handleConfirm} disabled={false} />);
 
     await user.click(screen.getByRole('button', { name: 'guardar' }));
 

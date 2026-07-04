@@ -8,6 +8,7 @@ type Props = {
   active?: boolean;
   borderOnHover?: boolean;
   className?: string;
+  disabled?: boolean;
 };
 
 export function CategoryIcon({
@@ -16,6 +17,7 @@ export function CategoryIcon({
   isCircle = true,
   active = false,
   borderOnHover = false,
+  disabled = false,
   className,
 }: Props) {
   const Icon = getIcon(category.icon);
@@ -28,7 +30,8 @@ export function CategoryIcon({
         'flex items-center justify-center',
         isCircle
           ? 'rounded-full p-3'
-          : 'flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-medium transition-colors hover:cursor-pointer',
+          : 'flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-medium transition-colors',
+        !disabled && 'hover:cursor-pointer',
         borderOnHover && `border-1 ${colors.border}`,
         active ? colors.active : colors.circle,
         className,

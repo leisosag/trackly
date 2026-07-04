@@ -1,11 +1,12 @@
+import { ConfirmButton } from '@/shared/components';
 import { evaluateExpression } from '../utils/evaluateExpression';
-import { formatCurrency, cn } from '@/shared/utils';
-import { CheckIcon } from '@phosphor-icons/react';
+import { formatCurrency } from '@/shared/utils';
 
 interface CalculatorProps {
   expression: string;
   onExpressionChange: (expression: string) => void;
   onConfirm: (amount: number) => void;
+  disabled?: boolean;
 }
 
 const KEYS = [
@@ -31,6 +32,7 @@ export function Calculator({
   expression,
   onExpressionChange,
   onConfirm,
+  disabled = false,
 }: CalculatorProps) {
   const result = evaluateExpression(expression);
   const isValid = result !== null && result > 0;
@@ -68,26 +70,19 @@ export function Calculator({
           <button
             key={key}
             type="button"
+            disabled={disabled}
             onClick={() => handleKey(key)}
-            className="rounded-lg bg-neutral-50 dark:bg-mauve-700 py-2 text-base font-medium text-neutral-800 dark:text-mauve-50 hover:bg-neutral-200 dark:hover:bg-mauve-600/30 active:bg-neutral-300 hover:cursor-pointer"
+            className="rounded-lg bg-neutral-50 dark:bg-mauve-700 py-3 text-base font-medium text-neutral-800 dark:text-mauve-50 hover:bg-neutral-200 dark:hover:bg-mauve-600/30 active:bg-neutral-300 enabled:hover:cursor-pointer dark:disabled:bg-mauve-400"
           >
             {key}
           </button>
         ))}
       </div>
 
-      <button
-        type="button"
-        disabled={!isValid}
-        onClick={handleConfirm}
-        className={cn(
-          'flex items-center justify-center rounded-xl bg-neutral-900 dark:bg-cyan-300 py-3 font-medium text-white dark:text-mauve-900 disabled:bg-neutral-300 dark:disabled:bg-mauve-400',
-          isValid && 'hover:cursor-pointer',
-        )}
-        aria-label="guardar"
-      >
-        <CheckIcon size={25} />
-      </button>
+      <ConfirmButton
+        onConfirm={handleConfirm}
+        disabled={!isValid || disabled}
+      />
     </div>
   );
 }

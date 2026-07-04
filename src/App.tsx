@@ -1,38 +1,19 @@
 import { useState } from 'react';
-import { Toaster, toast } from 'sonner';
-import {
-  useMovements,
-  MovementList,
-  BalanceHeader,
-  type Movement,
-} from '@/features/movements';
-import { MovementForm } from '@/features/movement-form';
-import { Fab, Modal } from '@/shared/components';
+import { Toaster } from 'sonner';
+import { WalletIcon, ChartPieIcon } from '@phosphor-icons/react';
+import { MovementsPage } from '@/features/movements';
+import { BottomNav, type NavItem } from '@/shared/components';
+import { BudgetsPage } from '@/features/budgets';
 
-type FormState = { mode: 'create' } | { mode: 'edit'; movement: Movement };
+type AppSection = 'movements' | 'budgets';
 
 function App() {
-  const { movements, addMovement, updateMovement, removeMovement } =
-    useMovements();
-  const [formState, setFormState] = useState<FormState | null>(null);
+  const [activeSection, setActiveSection] = useState<AppSection>('movements');
 
-  function handleCreate(movement: Omit<Movement, 'id'>) {
-    addMovement(movement);
-    setFormState(null);
-    toast.success('Movimiento cargado');
-  }
-
-  function handleUpdate(id: string, movement: Omit<Movement, 'id'>) {
-    updateMovement(id, movement);
-    setFormState(null);
-    toast.success('Movimiento actualizado');
-  }
-
-  function handleDelete(id: string) {
-    removeMovement(id);
-    setFormState(null);
-    toast.success('Movimiento eliminado');
-  }
+  const NAV_ITEMS: NavItem[] = [
+    { id: 'movements', label: 'Movimientos', icon: WalletIcon },
+    { id: 'budgets', label: 'Presupuestos', icon: ChartPieIcon },
+  ];
 
   return (
     <div className="min-h-screen bg-neutral-100 dark:bg-mauve-950">
@@ -45,41 +26,15 @@ function App() {
         }}
       />
 
-      <BalanceHeader movements={movements} />
+      {activeSection === 'movements' && <MovementsPage />}
 
-      <main>
-        <MovementList
-          movements={movements}
-          onMovementClick={(movement) =>
-            setFormState({ mode: 'edit', movement })
-          }
-        />
-      </main>
+      {activeSection === 'budgets' && <BudgetsPage />}
 
-      <Fab onClick={() => setFormState({ mode: 'create' })} />
-
-      <Modal
-        open={formState !== null}
-        onOpenChange={(open) => !open && setFormState(null)}
-        title={
-          formState?.mode === 'edit' ? 'Editar movimiento' : 'Nuevo movimiento'
-        }
-      >
-        {formState?.mode === 'create' && (
-          <MovementForm key="create" mode="create" onSubmit={handleCreate} />
-        )}
-        {formState?.mode === 'edit' && (
-          <MovementForm
-            key={`edit-${formState.movement.id}`}
-            mode="edit"
-            initialMovement={formState.movement}
-            onSubmit={(movement) =>
-              handleUpdate(formState.movement.id, movement)
-            }
-            onDelete={() => handleDelete(formState.movement.id)}
-          />
-        )}
-      </Modal>
+      <BottomNav
+        items={NAV_ITEMS}
+        activeId={activeSection}
+        onSelect={(id) => setActiveSection(id as AppSection)}
+      />
     </div>
   );
 }

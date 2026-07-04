@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Toaster, toast } from 'sonner';
+import { WalletIcon, ChartPieIcon } from '@phosphor-icons/react';
 import {
   useMovements,
   MovementList,
@@ -7,14 +8,21 @@ import {
   type Movement,
 } from '@/features/movements';
 import { MovementForm } from '@/features/movement-form';
-import { Fab, Modal } from '@/shared/components';
+import { Fab, Modal, BottomNav, type NavItem } from '@/shared/components';
 
 type FormState = { mode: 'create' } | { mode: 'edit'; movement: Movement };
+type AppSection = 'movements' | 'budgets';
 
 function App() {
   const { movements, addMovement, updateMovement, removeMovement } =
     useMovements();
   const [formState, setFormState] = useState<FormState | null>(null);
+  const [activeSection, setActiveSection] = useState<AppSection>('movements');
+
+  const NAV_ITEMS: NavItem[] = [
+    { id: 'movements', label: 'Movimientos', icon: WalletIcon },
+    { id: 'budgets', label: 'Presupuestos', icon: ChartPieIcon },
+  ];
 
   function handleCreate(movement: Omit<Movement, 'id'>) {
     addMovement(movement);
@@ -45,18 +53,38 @@ function App() {
         }}
       />
 
-      <BalanceHeader movements={movements} />
+      {activeSection === 'movements' && <BalanceHeader movements={movements} />}
 
-      <main>
-        <MovementList
-          movements={movements}
-          onMovementClick={(movement) =>
-            setFormState({ mode: 'edit', movement })
-          }
-        />
+      <main className="pb-24">
+        {activeSection === 'movements' && (
+          <MovementList
+            movements={movements}
+            onMovementClick={(movement) =>
+              setFormState({ mode: 'edit', movement })
+            }
+          />
+        )}
+
+        {activeSection === 'budgets' && (
+          <div className="flex flex-col items-center justify-center py-16 text-neutral-400">
+            <p>Presupuestos: próximamente</p>
+          </div>
+        )}
       </main>
 
-      <Fab onClick={() => setFormState({ mode: 'create' })} />
+      {activeSection === 'movements' && (
+        <Fab
+          onClick={() => setFormState({ mode: 'create' })}
+          label="Agregar movimiento"
+          className="fixed bottom-6 left-1/2 z-6 -translate-x-1/2"
+        />
+      )}
+
+      <BottomNav
+        items={NAV_ITEMS}
+        activeId={activeSection}
+        onSelect={(id) => setActiveSection(id as AppSection)}
+      />
 
       <Modal
         open={formState !== null}

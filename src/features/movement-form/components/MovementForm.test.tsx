@@ -127,6 +127,7 @@ describe('MovementForm', () => {
       />,
     );
 
+    await user.click(screen.getByRole('button', { name: /editar/i }));
     await user.click(screen.getByRole('button', { name: /guardar/i }));
 
     expect(handleSubmit).toHaveBeenCalledWith(

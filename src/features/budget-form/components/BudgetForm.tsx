@@ -127,7 +127,7 @@ export function BudgetForm({
 
       <ConfirmButton
         onConfirm={handleSubmit}
-        disabled={mode === 'edit' ? !isValid || !enableFields : false}
+        disabled={mode === 'edit' ? !isValid || !enableFields : !isValid}
       />
     </div>
   );

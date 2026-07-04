@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { TrashIcon, PencilSimpleIcon } from '@phosphor-icons/react';
+import { PencilSimpleIcon } from '@phosphor-icons/react';
 import { CategoryMultiSelect } from './CategoryMultiSelect';
 import { cn } from '@/shared/utils';
+import { ConfirmDeleteButton } from '@/shared/components';
 import type { Budget } from '@/features/budgets';
 
 interface BudgetFormProps {
@@ -26,7 +27,6 @@ export function BudgetForm({
   const [categoryIds, setCategoryIds] = useState<string[]>(
     initialBudget?.categoryIds ?? [],
   );
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const numericAmount = Number(amount);
   const isValid = isGeneral
@@ -57,21 +57,7 @@ export function BudgetForm({
     <div className="flex flex-col gap-4">
       {mode === 'edit' && !isGeneral && onDelete && (
         <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={() =>
-              confirmingDelete ? onDelete() : setConfirmingDelete(true)
-            }
-            className={cn(
-              'flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium hover:cursor-pointer',
-              confirmingDelete
-                ? 'bg-red-600 text-white dark:bg-rose-500/15 dark:text-rose-300 dark:border dark:border-rose-400/20'
-                : 'text-red-600 dark:text-rose-400 hover:bg-red-50 dark:hover:bg-rose-400/10',
-            )}
-          >
-            <TrashIcon size={16} />
-            {confirmingDelete ? 'Sí, eliminar' : 'Eliminar'}
-          </button>
+          <ConfirmDeleteButton onConfirm={onDelete} />
         </div>
       )}
 

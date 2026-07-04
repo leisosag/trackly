@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { TrashIcon } from '@phosphor-icons/react';
 import { Calculator } from './Calculator';
 import { CategoryPicker } from './CategoryPicker';
 import { getCategoryById } from '@/features/categories';
 import {
-  cn,
   getTodayInputValue,
   isoToInputValue,
   applyDateToIso,
 } from '@/shared/utils';
-import { CategoryIcon, DateField, DescriptionField } from '@/shared/components';
+import {
+  CategoryIcon,
+  ConfirmDeleteButton,
+  DateField,
+  DescriptionField,
+} from '@/shared/components';
 import type { Movement } from '@/features/movements';
 
 type Step = 'category' | 'amount';
@@ -44,7 +47,6 @@ export function MovementForm({
       ? isoToInputValue(initialMovement.date)
       : getTodayInputValue(),
   );
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const selectedCategory = selectedCategoryId
     ? getCategoryById(selectedCategoryId)
@@ -103,21 +105,7 @@ export function MovementForm({
         </button>
 
         {mode === 'edit' && onDelete && (
-          <button
-            type="button"
-            onClick={() =>
-              confirmingDelete ? onDelete() : setConfirmingDelete(true)
-            }
-            className={cn(
-              'flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium hover:cursor-pointer',
-              confirmingDelete
-                ? 'bg-red-600 text-white dark:bg-rose-500/15 dark:text-rose-300 dark:border dark:border-rose-400/20'
-                : 'text-red-600 dark:text-rose-400 hover:bg-red-50 dark:hover:bg-rose-400/10',
-            )}
-          >
-            <TrashIcon size={16} />
-            {confirmingDelete ? 'Sí, eliminar' : 'Eliminar'}
-          </button>
+          <ConfirmDeleteButton onConfirm={onDelete} />
         )}
       </div>
 

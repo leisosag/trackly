@@ -69,7 +69,7 @@ export function Calculator({
             key={key}
             type="button"
             onClick={() => handleKey(key)}
-            className="rounded-lg bg-neutral-50 dark:bg-mauve-700 py-2 text-base font-medium text-neutral-800 dark:text-mauve-50 hover:bg-neutral-200 dark:hover:bg-mauve-600/30 active:bg-neutral-300 hover:cursor-pointer"
+            className="rounded-lg bg-neutral-50 dark:bg-mauve-700 py-3 text-base font-medium text-neutral-800 dark:text-mauve-50 hover:bg-neutral-200 dark:hover:bg-mauve-600/30 active:bg-neutral-300 hover:cursor-pointer"
           >
             {key}
           </button>

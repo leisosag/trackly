@@ -24,11 +24,12 @@ const movements: Movement[] = [
 ];
 
 describe('groupByDay', () => {
-  it('agrupa movimientos del mismo día juntos', () => {
+  it('agrupa movimientos del mismo día juntos y los ordena del más reciente al más viejo', () => {
     const result = groupByDay(movements);
     const julyGroup = result.find((g) => g.date === '2026-07-01');
 
     expect(julyGroup?.movements).toHaveLength(2);
+    expect(julyGroup?.movements.map((m) => m.id)).toEqual(['2', '1']);
   });
 
   it('separa movimientos de días distintos en grupos distintos', () => {

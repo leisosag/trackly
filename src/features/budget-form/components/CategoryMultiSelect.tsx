@@ -4,29 +4,36 @@ import { CategoryIcon } from '@/shared/components';
 interface CategoryMultiSelectProps {
   selectedCategoryIds: string[];
   onToggle: (categoryId: string) => void;
+  disabled?: boolean;
 }
 
 function CategoryChip({
   category,
   isSelected,
   onToggle,
+  disabled = false,
 }: {
   category: Category;
   isSelected: boolean;
   onToggle: (id: string) => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       role="checkbox"
       aria-checked={isSelected}
-      onClick={() => onToggle(category.id)}
+      onClick={() => {
+        if (disabled) return;
+        onToggle(category.id);
+      }}
     >
       <CategoryIcon
         category={category}
         isCircle={false}
         active={isSelected}
         borderOnHover
+        disabled={disabled}
       />
     </button>
   );
@@ -35,6 +42,7 @@ function CategoryChip({
 export function CategoryMultiSelect({
   selectedCategoryIds,
   onToggle,
+  disabled = false,
 }: CategoryMultiSelectProps) {
   const expenseCategories = categoriesSeed.filter((c) => c.type === 'expense');
 
@@ -46,6 +54,7 @@ export function CategoryMultiSelect({
           category={category}
           isSelected={selectedCategoryIds.includes(category.id)}
           onToggle={onToggle}
+          disabled={disabled}
         />
       ))}
     </div>

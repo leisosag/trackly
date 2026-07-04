@@ -6,6 +6,7 @@ interface CalculatorProps {
   expression: string;
   onExpressionChange: (expression: string) => void;
   onConfirm: (amount: number) => void;
+  disabled?: boolean;
 }
 
 const KEYS = [
@@ -31,6 +32,7 @@ export function Calculator({
   expression,
   onExpressionChange,
   onConfirm,
+  disabled = false,
 }: CalculatorProps) {
   const result = evaluateExpression(expression);
   const isValid = result !== null && result > 0;
@@ -68,15 +70,19 @@ export function Calculator({
           <button
             key={key}
             type="button"
+            disabled={disabled}
             onClick={() => handleKey(key)}
-            className="rounded-lg bg-neutral-50 dark:bg-mauve-700 py-3 text-base font-medium text-neutral-800 dark:text-mauve-50 hover:bg-neutral-200 dark:hover:bg-mauve-600/30 active:bg-neutral-300 hover:cursor-pointer"
+            className="rounded-lg bg-neutral-50 dark:bg-mauve-700 py-3 text-base font-medium text-neutral-800 dark:text-mauve-50 hover:bg-neutral-200 dark:hover:bg-mauve-600/30 active:bg-neutral-300 enabled:hover:cursor-pointer dark:disabled:bg-mauve-400"
           >
             {key}
           </button>
         ))}
       </div>
 
-      <ConfirmButton onConfirm={handleConfirm} isValid={isValid} />
+      <ConfirmButton
+        onConfirm={handleConfirm}
+        disabled={!isValid || disabled}
+      />
     </div>
   );
 }

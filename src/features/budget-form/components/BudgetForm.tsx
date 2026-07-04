@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { PencilSimpleIcon } from '@phosphor-icons/react';
 import { CategoryMultiSelect } from './CategoryMultiSelect';
-import { ConfirmButton, ConfirmDeleteButton } from '@/shared/components';
+import {
+  ConfirmButton,
+  ConfirmDeleteButton,
+  ConfirmEditButton,
+} from '@/shared/components';
 import type { Budget } from '@/features/budgets';
 
 interface BudgetFormProps {
@@ -17,6 +21,8 @@ export function BudgetForm({
   onSubmit,
   onDelete,
 }: BudgetFormProps) {
+  const [enableFields, setEnableFields] = useState(false);
+
   const isGeneral = initialBudget?.isGeneral ?? false;
 
   const [name, setName] = useState(initialBudget?.name ?? '');
@@ -52,11 +58,18 @@ export function BudgetForm({
     });
   }
 
+  function handleEnableFields() {
+    setEnableFields((prev) => !prev);
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      {mode === 'edit' && !isGeneral && onDelete && (
-        <div className="flex justify-end">
-          <ConfirmDeleteButton onConfirm={onDelete} />
+      {mode === 'edit' && (
+        <div className="flex justify-end gap-2">
+          {!isGeneral && onDelete && (
+            <ConfirmDeleteButton onConfirm={onDelete} />
+          )}
+          <ConfirmEditButton onConfirm={handleEnableFields} />
         </div>
       )}
 
@@ -70,6 +83,7 @@ export function BudgetForm({
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            disabled={mode === 'edit' ? !enableFields : false}
             placeholder="Nombre del presupuesto"
             aria-label="Nombre del presupuesto"
             className="w-full text-sm text-neutral-900 dark:text-mauve-50 outline-none placeholder:text-neutral-400"
@@ -84,6 +98,7 @@ export function BudgetForm({
           inputMode="decimal"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          disabled={mode === 'edit' ? !enableFields : false}
           placeholder="Monto límite"
           aria-label="Monto límite del presupuesto"
           className="w-full text-sm text-neutral-900 dark:text-mauve-50 outline-none placeholder:text-neutral-400"
@@ -105,11 +120,15 @@ export function BudgetForm({
           <CategoryMultiSelect
             selectedCategoryIds={categoryIds}
             onToggle={toggleCategory}
+            disabled={mode === 'edit' ? !enableFields : false}
           />
         </div>
       )}
 
-      <ConfirmButton onConfirm={handleSubmit} isValid={isValid} />
+      <ConfirmButton
+        onConfirm={handleSubmit}
+        disabled={mode === 'edit' ? !isValid || !enableFields : false}
+      />
     </div>
   );
 }

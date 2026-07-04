@@ -5,9 +5,14 @@ import { formatDateLabel } from '@/shared/utils';
 interface DateFieldProps {
   value: string; // yyyy-mm-dd
   onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-export function DateField({ value, onChange }: DateFieldProps) {
+export function DateField({
+  value,
+  onChange,
+  disabled = false,
+}: DateFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   function openPicker() {
@@ -18,7 +23,8 @@ export function DateField({ value, onChange }: DateFieldProps) {
     <button
       type="button"
       onClick={openPicker}
-      className="flex w-full items-center justify-between rounded-lg border border-neutral-200 px-3 py-2.5 text-left hover:bg-neutral-50 dark:hover:bg-mauve-700/40 hover:cursor-pointer"
+      className="flex w-full items-center justify-between rounded-lg border border-neutral-200 px-3 py-2.5 text-left enabled:hover:bg-neutral-50 dark:enabled:hover:bg-mauve-700/40 hover:cursor-pointer disabled:cursor-default"
+      disabled={disabled}
     >
       <div className="flex items-center gap-2 text-sm text-neutral-700">
         <CalendarIcon

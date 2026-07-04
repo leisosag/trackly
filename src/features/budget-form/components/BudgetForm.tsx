@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { PencilSimpleIcon } from '@phosphor-icons/react';
 import { CategoryMultiSelect } from './CategoryMultiSelect';
-import { cn } from '@/shared/utils';
-import { ConfirmDeleteButton } from '@/shared/components';
+import { ConfirmButton, ConfirmDeleteButton } from '@/shared/components';
 import type { Budget } from '@/features/budgets';
 
 interface BudgetFormProps {
@@ -110,18 +109,7 @@ export function BudgetForm({
         </div>
       )}
 
-      <button
-        type="button"
-        disabled={!isValid}
-        onClick={handleSubmit}
-        className={cn(
-          'rounded-xl bg-neutral-900 dark:bg-cyan-300 py-3 font-medium text-white dark:text-mauve-900 disabled:bg-neutral-300 dark:disabled:bg-mauve-400',
-          isValid && 'hover:cursor-pointer',
-        )}
-        aria-label="guardar"
-      >
-        Guardar
-      </button>
+      <ConfirmButton onConfirm={handleSubmit} isValid={isValid} />
     </div>
   );
 }

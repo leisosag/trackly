@@ -1,6 +1,6 @@
+import { ConfirmButton } from '@/shared/components';
 import { evaluateExpression } from '../utils/evaluateExpression';
-import { formatCurrency, cn } from '@/shared/utils';
-import { CheckIcon } from '@phosphor-icons/react';
+import { formatCurrency } from '@/shared/utils';
 
 interface CalculatorProps {
   expression: string;
@@ -76,18 +76,7 @@ export function Calculator({
         ))}
       </div>
 
-      <button
-        type="button"
-        disabled={!isValid}
-        onClick={handleConfirm}
-        className={cn(
-          'flex items-center justify-center rounded-xl bg-neutral-900 dark:bg-cyan-300 py-3 font-medium text-white dark:text-mauve-900 disabled:bg-neutral-300 dark:disabled:bg-mauve-400',
-          isValid && 'hover:cursor-pointer',
-        )}
-        aria-label="guardar"
-      >
-        <CheckIcon size={25} />
-      </button>
+      <ConfirmButton onConfirm={handleConfirm} isValid={isValid} />
     </div>
   );
 }

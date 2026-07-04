@@ -8,15 +8,23 @@ import {
   type Movement,
 } from '@/features/movements';
 import { MovementForm } from '@/features/movement-form';
+import { useBudgets, BudgetList, type Budget } from '@/features/budgets';
+import { BudgetForm } from '@/features/budget-form';
 import { Fab, Modal, BottomNav, type NavItem } from '@/shared/components';
 
 type FormState = { mode: 'create' } | { mode: 'edit'; movement: Movement };
+type BudgetFormState = { mode: 'create' } | { mode: 'edit'; budget: Budget };
 type AppSection = 'movements' | 'budgets';
 
 function App() {
   const { movements, addMovement, updateMovement, removeMovement } =
     useMovements();
+  const { budgets, addBudget, updateBudget, removeBudget } = useBudgets();
+
   const [formState, setFormState] = useState<FormState | null>(null);
+  const [budgetFormState, setBudgetFormState] =
+    useState<BudgetFormState | null>(null);
+
   const [activeSection, setActiveSection] = useState<AppSection>('movements');
 
   const NAV_ITEMS: NavItem[] = [
@@ -40,6 +48,24 @@ function App() {
     removeMovement(id);
     setFormState(null);
     toast.success('Movimiento eliminado');
+  }
+
+  function handleBudgetCreate(budget: Omit<Budget, 'id'>) {
+    addBudget(budget);
+    setBudgetFormState(null);
+    toast.success('Presupuesto creado');
+  }
+
+  function handleBudgetUpdate(id: string, budget: Omit<Budget, 'id'>) {
+    updateBudget(id, budget);
+    setBudgetFormState(null);
+    toast.success('Presupuesto actualizado');
+  }
+
+  function handleBudgetDelete(id: string) {
+    removeBudget(id);
+    setBudgetFormState(null);
+    toast.success('Presupuesto eliminado');
   }
 
   return (
@@ -66,9 +92,13 @@ function App() {
         )}
 
         {activeSection === 'budgets' && (
-          <div className="flex flex-col items-center justify-center py-16 text-neutral-400">
-            <p>Presupuestos: próximamente</p>
-          </div>
+          <BudgetList
+            budgets={budgets}
+            movements={movements}
+            onBudgetClick={(budget) =>
+              setBudgetFormState({ mode: 'edit', budget })
+            }
+          />
         )}
       </main>
 
@@ -76,6 +106,14 @@ function App() {
         <Fab
           onClick={() => setFormState({ mode: 'create' })}
           label="Agregar movimiento"
+          className="fixed bottom-6 left-1/2 z-6 -translate-x-1/2"
+        />
+      )}
+
+      {activeSection === 'budgets' && (
+        <Fab
+          onClick={() => setBudgetFormState({ mode: 'create' })}
+          label="Agregar presupuesto"
           className="fixed bottom-6 left-1/2 z-6 -translate-x-1/2"
         />
       )}
@@ -105,6 +143,41 @@ function App() {
               handleUpdate(formState.movement.id, movement)
             }
             onDelete={() => handleDelete(formState.movement.id)}
+          />
+        )}
+      </Modal>
+
+      <Modal
+        open={budgetFormState !== null}
+        onOpenChange={(open) => !open && setBudgetFormState(null)}
+        title={
+          budgetFormState?.mode === 'edit'
+            ? budgetFormState.budget.isGeneral
+              ? 'Editar presupuesto general'
+              : 'Editar presupuesto'
+            : 'Nuevo presupuesto'
+        }
+      >
+        {budgetFormState?.mode === 'create' && (
+          <BudgetForm
+            key="create-budget"
+            mode="create"
+            onSubmit={handleBudgetCreate}
+          />
+        )}
+        {budgetFormState?.mode === 'edit' && (
+          <BudgetForm
+            key={`edit-budget-${budgetFormState.budget.id}`}
+            mode="edit"
+            initialBudget={budgetFormState.budget}
+            onSubmit={(budget) =>
+              handleBudgetUpdate(budgetFormState.budget.id, budget)
+            }
+            onDelete={
+              budgetFormState.budget.isGeneral
+                ? undefined
+                : () => handleBudgetDelete(budgetFormState.budget.id)
+            }
           />
         )}
       </Modal>

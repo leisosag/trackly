@@ -11,4 +11,5 @@ export {
 export { calculateSummary, type Summary } from './calculateSummary';
 export { getPeriodRange } from './getPeriodRange';
 export { calculateBudgetProgress } from './calculateBudgetProgress';
+export { getBudgetMovements } from './getBudgetMovements';
 export { filterMovementsByPeriod } from './filterMovementsByPeriod';

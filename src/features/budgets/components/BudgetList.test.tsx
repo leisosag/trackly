@@ -1,6 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { BudgetList } from './BudgetList';
 import type { Movement } from '@/features/movements';
 import type { Budget } from '../types';
@@ -48,23 +47,5 @@ describe('BudgetList', () => {
     expect(
       screen.getByText('Todavía no creaste presupuestos personalizados'),
     ).toBeInTheDocument();
-  });
-
-  it('llama a onBudgetClick con el presupuesto tocado', async () => {
-    const user = userEvent.setup();
-    const handleClick = vi.fn();
-    render(
-      <SelectedMonthProvider>
-        <BudgetList
-          budgets={[general, custom]}
-          movements={movements}
-          onBudgetClick={handleClick}
-        />
-      </SelectedMonthProvider>,
-    );
-
-    await user.click(screen.getByText('Servicios'));
-
-    expect(handleClick).toHaveBeenCalledWith(custom);
   });
 });

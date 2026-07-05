@@ -65,11 +65,14 @@ export function BudgetForm({
   return (
     <div className="flex flex-col gap-4">
       {mode === 'edit' && (
-        <div className="flex justify-end gap-2">
+        <div className="grid grid-cols-2 gap-2 pt-1 sm:flex sm:justify-end">
           {!isGeneral && onDelete && (
             <ConfirmDeleteButton onConfirm={onDelete} />
           )}
-          <ConfirmEditButton onConfirm={handleEnableFields} />
+          <ConfirmEditButton
+            onConfirm={handleEnableFields}
+            className={isGeneral ? 'col-span-2' : ''}
+          />
         </div>
       )}
 

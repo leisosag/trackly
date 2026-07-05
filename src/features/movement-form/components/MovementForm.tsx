@@ -124,8 +124,8 @@ export function MovementForm({
 
         {mode === 'edit' && (
           <div className="flex gap-2">
-            {onDelete && <ConfirmDeleteButton onConfirm={onDelete} />}
-            <ConfirmEditButton onConfirm={handleEnableFields} />
+            {onDelete && <ConfirmDeleteButton onConfirm={onDelete} iconOnly />}
+            <ConfirmEditButton onConfirm={handleEnableFields} iconOnly />
           </div>
         )}
       </div>

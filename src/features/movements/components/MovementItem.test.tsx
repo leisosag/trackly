@@ -11,7 +11,6 @@ describe('MovementItem', () => {
       categoryId: 'salary',
       amount: 5000,
       date: '2026-07-01T10:00:00.000Z',
-      paymentMethodId: 'debit',
     };
 
     render(<MovementItem movement={movement} />);

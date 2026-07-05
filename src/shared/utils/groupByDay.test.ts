@@ -15,7 +15,6 @@ const movements: Movement[] = [
     categoryId: 'salary',
     amount: 5000,
     date: '2026-07-01T18:00:00.000Z',
-    paymentMethodId: 'debit',
   },
   {
     id: '3',

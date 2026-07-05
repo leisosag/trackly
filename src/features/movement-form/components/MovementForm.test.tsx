@@ -192,6 +192,31 @@ describe('MovementForm', () => {
     expect(submittedDate.slice(0, 10)).toBe('2026-07-20');
   });
 
+  it('no muestra el selector de medio de pago para una categoría de ingreso', async () => {
+    const user = userEvent.setup();
+    render(<MovementForm onSubmit={() => {}} />);
+
+    await user.click(screen.getByText('Salario'));
+
+    expect(screen.queryByLabelText(/medio de pago/i)).not.toBeInTheDocument();
+  });
+
+  it('no incluye paymentMethodId al guardar un movimiento de ingreso', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+    render(<MovementForm onSubmit={handleSubmit} />);
+
+    await user.click(screen.getByText('Salario'));
+    await user.click(screen.getByText('1'));
+    await user.click(screen.getByText('5'));
+    await user.click(screen.getByText('0'));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ paymentMethodId: undefined }),
+    );
+  });
+
   it('el medio de pago por defecto es "Débito" al crear un movimiento nuevo', async () => {
     const user = userEvent.setup();
     render(<MovementForm onSubmit={() => {}} />);

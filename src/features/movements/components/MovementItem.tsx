@@ -13,7 +13,9 @@ interface MovementItemProps {
 export function MovementItem({ movement, onClick }: MovementItemProps) {
   const category = getCategoryById(movement.categoryId);
   const isIncome = category?.type === 'income';
-  const paymentMethod = getPaymentMethodById(movement.paymentMethodId);
+  const paymentMethod = movement.paymentMethodId
+    ? getPaymentMethodById(movement.paymentMethodId)
+    : undefined;
 
   return (
     <button

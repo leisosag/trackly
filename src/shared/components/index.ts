@@ -8,3 +8,4 @@ export { ConfirmDeleteButton } from './ConfirmDeleteButton';
 export { ConfirmButton } from './ConfirmButton';
 export { ConfirmEditButton } from './ConfirmEditButton';
 export { MonthSelector } from './MonthSelector';
+export { PaymentMethodSelect } from './PaymentMethodSelect';

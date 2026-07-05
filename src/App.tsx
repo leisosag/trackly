@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Toaster } from 'sonner';
 import { WalletIcon, ChartPieIcon } from '@phosphor-icons/react';
 import { MovementsPage } from '@/features/movements';
-import { BottomNav, type NavItem } from '@/shared/components';
+import { BottomNav, MonthSelector, type NavItem } from '@/shared/components';
 import { BudgetsPage } from '@/features/budgets';
 
 type AppSection = 'movements' | 'budgets';
@@ -25,6 +25,8 @@ function App() {
           },
         }}
       />
+
+      <MonthSelector />
 
       {activeSection === 'movements' && <MovementsPage />}
 

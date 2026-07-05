@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { BudgetList } from './BudgetList';
 import type { Movement } from '@/features/movements';
 import type { Budget } from '../types';
+import { SelectedMonthProvider } from '@/shared/context';
 
 const general: Budget = {
   id: 'g',
@@ -27,14 +28,22 @@ const movements: Movement[] = [];
 
 describe('BudgetList', () => {
   it('muestra el presupuesto general y los personalizados', () => {
-    render(<BudgetList budgets={[general, custom]} movements={movements} />);
+    render(
+      <SelectedMonthProvider>
+        <BudgetList budgets={[general, custom]} movements={movements} />
+      </SelectedMonthProvider>,
+    );
 
     expect(screen.getByText('Presupuesto general')).toBeInTheDocument();
     expect(screen.getByText('Servicios')).toBeInTheDocument();
   });
 
   it('muestra un mensaje cuando no hay presupuestos personalizados', () => {
-    render(<BudgetList budgets={[general]} movements={movements} />);
+    render(
+      <SelectedMonthProvider>
+        <BudgetList budgets={[general]} movements={movements} />
+      </SelectedMonthProvider>,
+    );
 
     expect(
       screen.getByText('Todavía no creaste presupuestos personalizados'),
@@ -45,11 +54,13 @@ describe('BudgetList', () => {
     const user = userEvent.setup();
     const handleClick = vi.fn();
     render(
-      <BudgetList
-        budgets={[general, custom]}
-        movements={movements}
-        onBudgetClick={handleClick}
-      />,
+      <SelectedMonthProvider>
+        <BudgetList
+          budgets={[general, custom]}
+          movements={movements}
+          onBudgetClick={handleClick}
+        />
+      </SelectedMonthProvider>,
     );
 
     await user.click(screen.getByText('Servicios'));

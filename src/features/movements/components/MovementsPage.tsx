@@ -6,12 +6,18 @@ import { MovementList } from './MovementList';
 import type { Movement } from '../types';
 import { Fab, Modal } from '@/shared/components';
 import { MovementForm } from '@/features/movement-form';
+import { useSelectedMonth } from '@/shared/context';
+import { filterMovementsByPeriod } from '@/shared/utils';
 
 type FormState = { mode: 'create' } | { mode: 'edit'; movement: Movement };
 
 export function MovementsPage() {
   const { movements, addMovement, updateMovement, removeMovement } =
     useMovements();
+
+  const { selectedDate } = useSelectedMonth();
+
+  const monthlyMovements = filterMovementsByPeriod(movements, selectedDate);
 
   const [formState, setFormState] = useState<FormState | null>(null);
 
@@ -35,11 +41,11 @@ export function MovementsPage() {
 
   return (
     <>
-      <BalanceHeader movements={movements} />
+      <BalanceHeader movements={monthlyMovements} />
 
       <main className="pb-24">
         <MovementList
-          movements={movements}
+          movements={monthlyMovements}
           onMovementClick={(movement) =>
             setFormState({ mode: 'edit', movement })
           }

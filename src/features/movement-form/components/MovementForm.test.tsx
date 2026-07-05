@@ -100,6 +100,7 @@ describe('MovementForm', () => {
           amount: 1500,
           description: 'Supermercado',
           date: '2026-07-01T10:00:00.000Z',
+          paymentMethodId: 'debit',
         }}
         onSubmit={() => {}}
       />,
@@ -122,6 +123,7 @@ describe('MovementForm', () => {
           categoryId: 'food',
           amount: 1500,
           date: '2026-07-01T10:00:00.000Z',
+          paymentMethodId: 'debit',
         }}
         onSubmit={handleSubmit}
       />,
@@ -147,6 +149,7 @@ describe('MovementForm', () => {
           categoryId: 'food',
           amount: 1500,
           date: '2026-07-01T10:00:00.000Z',
+          paymentMethodId: 'debit',
         }}
         onSubmit={() => {}}
         onDelete={handleDelete}
@@ -187,5 +190,74 @@ describe('MovementForm', () => {
 
     const submittedDate = handleSubmit.mock.calls[0][0].date;
     expect(submittedDate.slice(0, 10)).toBe('2026-07-20');
+  });
+
+  it('no muestra el selector de medio de pago para una categoría de ingreso', async () => {
+    const user = userEvent.setup();
+    render(<MovementForm onSubmit={() => {}} />);
+
+    await user.click(screen.getByText('Salario'));
+
+    expect(screen.queryByLabelText(/medio de pago/i)).not.toBeInTheDocument();
+  });
+
+  it('no incluye paymentMethodId al guardar un movimiento de ingreso', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+    render(<MovementForm onSubmit={handleSubmit} />);
+
+    await user.click(screen.getByText('Salario'));
+    await user.click(screen.getByText('1'));
+    await user.click(screen.getByText('5'));
+    await user.click(screen.getByText('0'));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ paymentMethodId: undefined }),
+    );
+  });
+
+  it('el medio de pago por defecto es "Débito" al crear un movimiento nuevo', async () => {
+    const user = userEvent.setup();
+    render(<MovementForm onSubmit={() => {}} />);
+
+    await user.click(screen.getByText('Comida'));
+
+    expect(screen.getByLabelText(/medio de pago/i)).toHaveValue('debit');
+  });
+
+  it('permite cambiar el medio de pago y lo incluye en el movimiento creado', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+    render(<MovementForm onSubmit={handleSubmit} />);
+
+    await user.click(screen.getByText('Comida'));
+    await user.selectOptions(screen.getByLabelText(/medio de pago/i), 'cash');
+    await user.click(screen.getByText('1'));
+    await user.click(screen.getByText('5'));
+    await user.click(screen.getByText('0'));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ paymentMethodId: 'cash' }),
+    );
+  });
+
+  it('en modo edición, carga el medio de pago del movimiento', () => {
+    render(
+      <MovementForm
+        mode="edit"
+        initialMovement={{
+          id: '1',
+          categoryId: 'food',
+          paymentMethodId: 'credit',
+          amount: 1500,
+          date: '2026-07-01T10:00:00.000Z',
+        }}
+        onSubmit={() => {}}
+      />,
+    );
+
+    expect(screen.getByLabelText(/medio de pago/i)).toHaveValue('credit');
   });
 });

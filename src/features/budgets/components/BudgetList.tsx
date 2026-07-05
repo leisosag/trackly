@@ -26,6 +26,7 @@ export function BudgetList({
           <h4 className="mb-2 text-sm font-medium text-neutral-500">General</h4>
           <BudgetCard
             progress={calculateBudgetProgress(general, movements, selectedDate)}
+            movements={movements}
             onClick={() => onBudgetClick?.(general)}
           />
         </div>
@@ -50,6 +51,7 @@ export function BudgetList({
                   movements,
                   selectedDate,
                 )}
+                movements={movements}
                 onClick={() => onBudgetClick?.(budget)}
               />
             ))}

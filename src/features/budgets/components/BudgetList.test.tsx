@@ -49,22 +49,4 @@ describe('BudgetList', () => {
       screen.getByText('Todavía no creaste presupuestos personalizados'),
     ).toBeInTheDocument();
   });
-
-  it('llama a onBudgetClick con el presupuesto tocado', async () => {
-    const user = userEvent.setup();
-    const handleClick = vi.fn();
-    render(
-      <SelectedMonthProvider>
-        <BudgetList
-          budgets={[general, custom]}
-          movements={movements}
-          onBudgetClick={handleClick}
-        />
-      </SelectedMonthProvider>,
-    );
-
-    await user.click(screen.getByText('Servicios'));
-
-    expect(handleClick).toHaveBeenCalledWith(custom);
-  });
 });

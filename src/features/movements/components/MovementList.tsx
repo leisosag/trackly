@@ -16,7 +16,7 @@ export function MovementList({
   if (groups.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-neutral-400">
-        <p>Todavía no cargaste ningún movimiento</p>
+        <p>Todavía no cargaste movimientos en este período</p>
       </div>
     );
   }

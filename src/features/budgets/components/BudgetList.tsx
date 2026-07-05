@@ -2,6 +2,7 @@ import { calculateBudgetProgress } from '@/shared/utils';
 import { BudgetCard } from './BudgetCard';
 import type { Movement } from '@/features/movements';
 import type { Budget } from '../types';
+import { useSelectedMonth } from '@/shared/context';
 
 interface BudgetListProps {
   budgets: Budget[];
@@ -14,6 +15,7 @@ export function BudgetList({
   movements,
   onBudgetClick,
 }: BudgetListProps) {
+  const { selectedDate } = useSelectedMonth();
   const general = budgets.find((b) => b.isGeneral);
   const custom = budgets.filter((b) => !b.isGeneral);
 
@@ -23,7 +25,7 @@ export function BudgetList({
         <div>
           <h4 className="mb-2 text-sm font-medium text-neutral-500">General</h4>
           <BudgetCard
-            progress={calculateBudgetProgress(general, movements)}
+            progress={calculateBudgetProgress(general, movements, selectedDate)}
             onClick={() => onBudgetClick?.(general)}
           />
         </div>
@@ -43,7 +45,11 @@ export function BudgetList({
             {custom.map((budget) => (
               <BudgetCard
                 key={budget.id}
-                progress={calculateBudgetProgress(budget, movements)}
+                progress={calculateBudgetProgress(
+                  budget,
+                  movements,
+                  selectedDate,
+                )}
                 onClick={() => onBudgetClick?.(budget)}
               />
             ))}

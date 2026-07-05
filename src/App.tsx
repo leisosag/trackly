@@ -20,6 +20,7 @@ function App() {
       <Toaster
         position="top-center"
         toastOptions={{
+          duration: 800,
           classNames: {
             toast: 'bg-neutral-900 text-white border-none',
           },

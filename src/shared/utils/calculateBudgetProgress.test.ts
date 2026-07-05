@@ -11,18 +11,21 @@ const movements: Movement[] = [
     categoryId: 'food',
     amount: 800,
     date: '2026-07-05T10:00:00.000Z',
+    paymentMethodId: 'debit',
   },
   {
     id: '2',
     categoryId: 'transport',
     amount: 100,
     date: '2026-07-06T10:00:00.000Z',
+    paymentMethodId: 'debit',
   },
   {
     id: '3',
     categoryId: 'salary',
     amount: 5000,
     date: '2026-07-01T10:00:00.000Z',
+    paymentMethodId: 'debit',
   },
 ];
 

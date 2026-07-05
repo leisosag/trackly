@@ -28,7 +28,11 @@ export function PaymentMethodSelect({
         className="w-full bg-transparent text-sm text-neutral-900 dark:text-mauve-50 outline-none disabled:text-mauve-400 enabled:hover:cursor-pointer"
       >
         {paymentMethods.map((method) => (
-          <option key={method.id} value={method.id}>
+          <option
+            key={method.id}
+            value={method.id}
+            className="text-neutral-900 bg-white"
+          >
             {method.name}
           </option>
         ))}

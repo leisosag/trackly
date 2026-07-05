@@ -13,6 +13,7 @@ import {
   ConfirmEditButton,
   DateField,
   DescriptionField,
+  PaymentMethodSelect,
 } from '@/shared/components';
 import type { Movement } from '@/features/movements';
 
@@ -48,6 +49,9 @@ export function MovementForm({
       ? isoToInputValue(initialMovement.date)
       : getTodayInputValue(),
   );
+  const [paymentMethodId, setPaymentMethodId] = useState(
+    initialMovement?.paymentMethodId ?? 'debit',
+  );
   const [enableFields, setEnableFields] = useState(false);
 
   const selectedCategory = selectedCategoryId
@@ -69,6 +73,7 @@ export function MovementForm({
       description: description.trim() || undefined,
       amount,
       date: applyDateToIso(baseIso, dateValue),
+      paymentMethodId,
     });
 
     if (mode === 'create') {
@@ -126,6 +131,11 @@ export function MovementForm({
       <DateField
         value={dateValue}
         onChange={setDateValue}
+        disabled={mode === 'edit' ? !enableFields : false}
+      />
+      <PaymentMethodSelect
+        value={paymentMethodId}
+        onChange={setPaymentMethodId}
         disabled={mode === 'edit' ? !enableFields : false}
       />
       <DescriptionField

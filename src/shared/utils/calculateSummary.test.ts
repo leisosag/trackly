@@ -8,18 +8,21 @@ const movements: Movement[] = [
     categoryId: 'salary',
     amount: 5000,
     date: '2026-07-01T10:00:00.000Z',
+    paymentMethodId: 'debit',
   },
   {
     id: '2',
     categoryId: 'food',
     amount: 1500,
     date: '2026-07-01T10:00:00.000Z',
+    paymentMethodId: 'debit',
   },
   {
     id: '3',
     categoryId: 'transport',
     amount: 500,
     date: '2026-07-02T10:00:00.000Z',
+    paymentMethodId: 'debit',
   },
 ];
 
@@ -44,12 +47,14 @@ describe('calculateSummary', () => {
         categoryId: 'food',
         amount: 5000,
         date: '2026-07-01T10:00:00.000Z',
+        paymentMethodId: 'debit',
       },
       {
         id: '2',
         categoryId: 'salary',
         amount: 1000,
         date: '2026-07-01T10:00:00.000Z',
+        paymentMethodId: 'debit',
       },
     ]);
 

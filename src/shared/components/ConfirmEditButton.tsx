@@ -22,7 +22,7 @@ export function ConfirmEditButton({ onConfirm }: ConfirmEditButtonProps) {
         'flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium hover:cursor-pointer',
         editing
           ? 'bg-blue-600 text-white dark:bg-sky-500/15 dark:text-sky-300 dark:border dark:border-sky-400/20'
-          : 'hover:bg-blue-600 text-white dark:hover:bg-sky-500/15 dark:hover:text-sky-300',
+          : 'hover:bg-blue-600 text-neutral-400 dark:text-white dark:hover:bg-sky-500/15 dark:hover:text-sky-300',
       )}
     >
       <PencilSimpleIcon size={16} />

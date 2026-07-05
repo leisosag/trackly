@@ -11,6 +11,7 @@ describe('MovementItem', () => {
       categoryId: 'salary',
       amount: 5000,
       date: '2026-07-01T10:00:00.000Z',
+      paymentMethodId: 'debit',
     };
 
     render(<MovementItem movement={movement} />);
@@ -25,6 +26,7 @@ describe('MovementItem', () => {
       categoryId: 'food',
       amount: 1500,
       date: '2026-07-01T10:00:00.000Z',
+      paymentMethodId: 'debit',
     };
 
     render(<MovementItem movement={movement} />);
@@ -39,6 +41,7 @@ describe('MovementItem', () => {
       amount: 1500,
       date: '2026-07-01T10:00:00.000Z',
       description: 'Supermercado',
+      paymentMethodId: 'debit',
     };
 
     render(<MovementItem movement={movement} />);
@@ -54,6 +57,7 @@ describe('MovementItem', () => {
       categoryId: 'food',
       amount: 1500,
       date: '2026-07-01T10:00:00.000Z',
+      paymentMethodId: 'debit',
     };
 
     render(<MovementItem movement={movement} onClick={handleClick} />);
@@ -61,5 +65,20 @@ describe('MovementItem', () => {
     await user.click(screen.getByRole('button'));
 
     expect(handleClick).toHaveBeenCalledWith(movement);
+  });
+
+  it('renderiza un ícono de medio de pago junto al nombre de la categoría', () => {
+    const movement: Movement = {
+      id: '5',
+      categoryId: 'food',
+      paymentMethodId: 'credit',
+      amount: 1500,
+      date: '2026-07-01T10:00:00.000Z',
+    };
+
+    render(<MovementItem movement={movement} />);
+
+    const categoryName = screen.getByText('Comida');
+    expect(categoryName.querySelector('svg')).toBeInTheDocument();
   });
 });

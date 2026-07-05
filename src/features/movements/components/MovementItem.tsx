@@ -1,7 +1,9 @@
+import { CreditCardIcon } from '@phosphor-icons/react';
 import { getCategoryById } from '@/features/categories';
 import { formatCurrency, cn } from '@/shared/utils';
 import type { Movement } from '../types';
 import { CategoryIcon } from '@/shared/components';
+import { getPaymentMethodById } from '@/features/payment-methods';
 
 interface MovementItemProps {
   movement: Movement;
@@ -11,6 +13,7 @@ interface MovementItemProps {
 export function MovementItem({ movement, onClick }: MovementItemProps) {
   const category = getCategoryById(movement.categoryId);
   const isIncome = category?.type === 'income';
+  const paymentMethod = getPaymentMethodById(movement.paymentMethodId);
 
   return (
     <button
@@ -21,8 +24,14 @@ export function MovementItem({ movement, onClick }: MovementItemProps) {
       {category && <CategoryIcon category={category} />}
 
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-neutral-900 dark:text-mauve-50">
+        <p className="flex items-end gap-2 font-medium text-neutral-900 dark:text-mauve-50">
           {category?.name ?? 'Sin categoría'}
+          {paymentMethod?.kind === 'credit' && (
+            <CreditCardIcon
+              size={14}
+              className="shrink-0 text-neutral-500 dark:text-mauve-400 mb-1"
+            />
+          )}
         </p>
         {movement.description && (
           <p className="truncate text-sm text-neutral-500 dark:text-mauve-400">

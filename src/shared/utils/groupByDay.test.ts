@@ -8,18 +8,21 @@ const movements: Movement[] = [
     categoryId: 'food',
     amount: 100,
     date: '2026-07-01T10:00:00.000Z',
+    paymentMethodId: 'debit',
   },
   {
     id: '2',
     categoryId: 'salary',
     amount: 5000,
     date: '2026-07-01T18:00:00.000Z',
+    paymentMethodId: 'debit',
   },
   {
     id: '3',
     categoryId: 'transport',
     amount: 50,
     date: '2026-06-30T09:00:00.000Z',
+    paymentMethodId: 'debit',
   },
 ];
 
@@ -57,6 +60,7 @@ describe('groupByDay', () => {
       categoryId: 'food',
       amount: 200,
       date: '2026-07-18T02:00:00.000Z',
+      paymentMethodId: 'debit',
     };
 
     const result = groupByDay([lateNightMovement]);

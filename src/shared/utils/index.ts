@@ -14,3 +14,4 @@ export { calculateBudgetProgress } from './calculateBudgetProgress';
 export { getBudgetMovements } from './getBudgetMovements';
 export { filterMovementsByPeriod } from './filterMovementsByPeriod';
 export { getStatementPeriod, addPeriodMonths } from './statementPeriod';
+export { generateInstallments } from './generateInstallments';

@@ -14,3 +14,13 @@ export interface Movement {
   statementPeriod?: string; // "2026-08" — solo para medio de pago crédito
   installment?: Installment; // solo para medio de pago crédito
 }
+
+// Input para crear un movimiento nuevo: sin id (lo genera el repositorio) y sin installment/statementPeriod
+// (se calculan automáticamente si el medio de pago es una tarjeta de crédito).
+// installmentsCount es solo un input de formulario, nunca se persiste tal cual en el Movement final.
+export type NewMovementInput = Omit<
+  Movement,
+  'id' | 'installment' | 'statementPeriod'
+> & {
+  installmentsCount?: number;
+};

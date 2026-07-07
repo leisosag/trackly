@@ -7,6 +7,8 @@ interface CalculatorProps {
   onExpressionChange: (expression: string) => void;
   onConfirm: (amount: number) => void;
   disabled?: boolean;
+  // Deshabilita únicamente el botón de guardar (ej.: validaciones externas como cantidad de cuotas), sin bloquear el teclado numérico.
+  confirmDisabled?: boolean;
 }
 
 const KEYS = [
@@ -33,6 +35,7 @@ export function Calculator({
   onExpressionChange,
   onConfirm,
   disabled = false,
+  confirmDisabled = false,
 }: CalculatorProps) {
   const result = evaluateExpression(expression);
   const isValid = result !== null && result > 0;
@@ -81,7 +84,7 @@ export function Calculator({
 
       <ConfirmButton
         onConfirm={handleConfirm}
-        disabled={!isValid || disabled}
+        disabled={!isValid || disabled || confirmDisabled}
       />
     </div>
   );

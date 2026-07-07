@@ -260,4 +260,108 @@ describe('MovementForm', () => {
 
     expect(screen.getByLabelText(/medio de pago/i)).toHaveValue('default-card');
   });
+
+  it('no muestra el campo de cuotas cuando el medio de pago no es una tarjeta de crédito', async () => {
+    const user = userEvent.setup();
+    render(<MovementForm onSubmit={() => {}} />);
+
+    await user.click(screen.getByText('Comida'));
+
+    expect(
+      screen.queryByLabelText(/cantidad de cuotas/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it('muestra el campo de cuotas al elegir una tarjeta de crédito como medio de pago', async () => {
+    const user = userEvent.setup();
+    render(<MovementForm onSubmit={() => {}} />);
+
+    await user.click(screen.getByText('Comida'));
+    await user.selectOptions(
+      screen.getByLabelText(/medio de pago/i),
+      'default-card',
+    );
+
+    expect(screen.getByLabelText(/cantidad de cuotas/i)).toBeInTheDocument();
+  });
+
+  it('no muestra el campo de cuotas en modo edición aunque el medio de pago sea una tarjeta de crédito', () => {
+    render(
+      <MovementForm
+        mode="edit"
+        initialMovement={{
+          id: '1',
+          categoryId: 'food',
+          paymentMethodId: 'default-card',
+          amount: 1500,
+          date: '2026-07-01T10:00:00.000Z',
+        }}
+        onSubmit={() => {}}
+      />,
+    );
+
+    expect(
+      screen.queryByLabelText(/cantidad de cuotas/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it('el botón guardar se deshabilita si la cantidad de cuotas es inválida', async () => {
+    const user = userEvent.setup();
+    render(<MovementForm onSubmit={() => {}} />);
+
+    await user.click(screen.getByText('Comida'));
+    await user.selectOptions(
+      screen.getByLabelText(/medio de pago/i),
+      'default-card',
+    );
+    await user.clear(screen.getByLabelText(/cantidad de cuotas/i));
+    await user.type(screen.getByLabelText(/cantidad de cuotas/i), '0');
+    await user.click(screen.getByText('1'));
+    await user.click(screen.getByText('5'));
+    await user.click(screen.getByText('0'));
+
+    expect(screen.getByRole('button', { name: /guardar/i })).toBeDisabled();
+  });
+
+  it('incluye installmentsCount en el movimiento al cargar una compra en varias cuotas', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+    render(<MovementForm onSubmit={handleSubmit} />);
+
+    await user.click(screen.getByText('Comida'));
+    await user.selectOptions(
+      screen.getByLabelText(/medio de pago/i),
+      'default-card',
+    );
+    await user.clear(screen.getByLabelText(/cantidad de cuotas/i));
+    await user.type(screen.getByLabelText(/cantidad de cuotas/i), '3');
+    await user.click(screen.getByText('1'));
+    await user.click(screen.getByText('0'));
+    await user.click(screen.getByText('0'));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: 100,
+        paymentMethodId: 'default-card',
+        installmentsCount: 3,
+      }),
+    );
+  });
+
+  it('no incluye installmentsCount si el medio de pago no es una tarjeta de crédito', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+    render(<MovementForm onSubmit={handleSubmit} />);
+
+    await user.click(screen.getByText('Comida'));
+    await user.click(screen.getByText('1'));
+    await user.click(screen.getByText('5'));
+    await user.click(screen.getByText('0'));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ installmentsCount: undefined }),
+    );
+  });
 });

@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { getStatementPeriod, addPeriodMonths } from './statementPeriod';
+import {
+  getStatementPeriod,
+  addPeriodMonths,
+  formatPeriodLabel,
+} from './statementPeriod';
 
 describe('getStatementPeriod', () => {
   it('incluye la compra en el resumen del mes actual si es el día de cierre o antes', () => {
@@ -36,5 +40,15 @@ describe('addPeriodMonths', () => {
 
   it('con amount 0 devuelve el mismo período', () => {
     expect(addPeriodMonths('2026-07', 0)).toBe('2026-07');
+  });
+});
+
+describe('formatPeriodLabel', () => {
+  it('formatea un período como mes y año en español, con mayúscula inicial', () => {
+    expect(formatPeriodLabel('2026-08')).toBe('Agosto de 2026');
+  });
+
+  it('formatea correctamente el mes de enero', () => {
+    expect(formatPeriodLabel('2027-01')).toBe('Enero de 2027');
   });
 });

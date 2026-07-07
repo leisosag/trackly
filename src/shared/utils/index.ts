@@ -17,5 +17,7 @@ export {
   getStatementPeriod,
   addPeriodMonths,
   formatPeriodLabel,
+  dateToPeriod,
 } from './statementPeriod';
 export { generateInstallments } from './generateInstallments';
+export { getCreditCardMovements } from './getCreditCardMovements';

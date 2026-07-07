@@ -25,3 +25,7 @@ export function formatPeriodLabel(period: string): string {
   }).format(date);
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
+
+export function dateToPeriod(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}

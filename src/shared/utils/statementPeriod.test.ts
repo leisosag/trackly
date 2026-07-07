@@ -3,6 +3,7 @@ import {
   getStatementPeriod,
   addPeriodMonths,
   formatPeriodLabel,
+  dateToPeriod,
 } from './statementPeriod';
 
 describe('getStatementPeriod', () => {
@@ -50,5 +51,15 @@ describe('formatPeriodLabel', () => {
 
   it('formatea correctamente el mes de enero', () => {
     expect(formatPeriodLabel('2027-01')).toBe('Enero de 2027');
+  });
+});
+
+describe('dateToPeriod', () => {
+  it('convierte una fecha al formato "YYYY-MM"', () => {
+    expect(dateToPeriod(new Date('2026-07-15T12:00:00'))).toBe('2026-07');
+  });
+
+  it('agrega el cero inicial en meses de un dígito', () => {
+    expect(dateToPeriod(new Date('2026-01-05T12:00:00'))).toBe('2026-01');
   });
 });

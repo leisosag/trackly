@@ -55,7 +55,6 @@ export function MovementsPage() {
       <Fab
         onClick={() => setFormState({ mode: 'create' })}
         label="Agregar movimiento"
-        className="fixed bottom-6 left-1/2 z-6 -translate-x-1/2"
       />
 
       <Modal

@@ -250,7 +250,7 @@ describe('MovementForm', () => {
         initialMovement={{
           id: '1',
           categoryId: 'food',
-          paymentMethodId: 'credit',
+          paymentMethodId: 'default-card',
           amount: 1500,
           date: '2026-07-01T10:00:00.000Z',
         }}
@@ -258,6 +258,6 @@ describe('MovementForm', () => {
       />,
     );
 
-    expect(screen.getByLabelText(/medio de pago/i)).toHaveValue('credit');
+    expect(screen.getByLabelText(/medio de pago/i)).toHaveValue('default-card');
   });
 });

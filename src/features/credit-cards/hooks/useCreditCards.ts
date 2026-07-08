@@ -7,12 +7,17 @@ export function useCreditCards() {
     creditCardsRepository.getAllOrCreateDefault(),
   );
 
-  function addCreditCard(card: Omit<CreditCard, 'id'>) {
+  function addCreditCard(
+    card: Omit<CreditCard, 'id' | 'closingDayConfirmedPeriod'>,
+  ) {
     const created = creditCardsRepository.create(card);
     setCreditCards((prev) => [...prev, created]);
   }
 
-  function updateCreditCard(id: string, updates: Omit<CreditCard, 'id'>) {
+  function updateCreditCard(
+    id: string,
+    updates: Omit<CreditCard, 'id' | 'closingDayConfirmedPeriod'>,
+  ) {
     const updated = creditCardsRepository.update(id, updates);
     if (!updated) return;
     setCreditCards((prev) => prev.map((c) => (c.id === id ? updated : c)));

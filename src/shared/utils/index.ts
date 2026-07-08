@@ -21,3 +21,8 @@ export {
 } from './statementPeriod';
 export { generateInstallments } from './generateInstallments';
 export { getCreditCardMovements } from './getCreditCardMovements';
+export { canDeactivateCreditCard } from './canDeactivateCreditCard';
+export {
+  groupMovementsByCard,
+  type CardMovementGroup,
+} from './groupMovementsByCard';

@@ -10,8 +10,10 @@ function cardToPaymentMethod(card: CreditCard): PaymentMethod {
 }
 
 // Combina los medios fijos (efectivo, débito) con las tarjetas dinámicas de creditCardsRepository.
-// Quien consume esta función (el Select, el formulario) no necesita cambiar nada cuando se agreguen nuevas tarjetas.
 export function getPaymentMethods(): PaymentMethod[] {
   const cards = creditCardsRepository.getAllOrCreateDefault();
-  return [...paymentMethodsSeed, ...cards.map(cardToPaymentMethod)];
+  return [
+    ...paymentMethodsSeed,
+    ...cards.filter((c) => c.isActive).map(cardToPaymentMethod),
+  ];
 }

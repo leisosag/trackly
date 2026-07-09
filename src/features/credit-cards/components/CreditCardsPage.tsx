@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GearSixIcon, PlusIcon } from '@phosphor-icons/react';
 import { useMovements, MovementList } from '@/features/movements';
-import { useCreditCards, type CreditCard } from '@/features/credit-cards';
+import {
+  needsClosingDayReminder,
+  useCreditCards,
+  type CreditCard,
+} from '@/features/credit-cards';
 import { useSelectedMonth } from '@/shared/context';
 import {
   formatCurrency,
@@ -14,6 +18,7 @@ import {
 import { Modal } from '@/shared/components';
 import { CreditCardForm } from './CreditCardForm';
 import { CreditCardList } from './CreditCardList';
+import { toast } from 'sonner';
 
 type FormState = { mode: 'create' } | { mode: 'edit'; card: CreditCard };
 
@@ -30,6 +35,19 @@ export function CreditCardsPage() {
   const total = cardMovements.reduce((sum, m) => sum + m.amount, 0);
   const activeCards = creditCards.filter((c) => c.isActive);
   const groups = groupMovementsByCard(cardMovements, activeCards);
+
+  // Se dispara una única vez al entrar a la pantalla (no en cada render ni al cambiar el mes navegado)
+  // El recordatorio es sobre el mes real actual, no sobre el mes del selector.
+  useEffect(() => {
+    activeCards.forEach((card) => {
+      if (needsClosingDayReminder(card)) {
+        toast(
+          `Recordá actualizar la fecha de cierre de ${card.name} para este mes`,
+        );
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleCardCreate(
     card: Omit<CreditCard, 'id' | 'closingDayConfirmedPeriod'>,

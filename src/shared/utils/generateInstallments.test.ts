@@ -59,4 +59,31 @@ describe('generateInstallments', () => {
 
     expect(result[0].statementPeriod).toBe('2026-08');
   });
+
+  it('ajusta la fecha de cada cuota al mes de su statementPeriod, conservando el día y la hora', () => {
+    const result = generateInstallments(base, 3, 15);
+
+    expect(new Date(result[0].date).getMonth()).toBe(6); // julio
+    expect(new Date(result[1].date).getMonth()).toBe(7); // agosto
+    expect(new Date(result[2].date).getMonth()).toBe(8); // septiembre
+
+    result.forEach((m) => {
+      expect(new Date(m.date).getDate()).toBe(new Date(base.date).getDate());
+      expect(new Date(m.date).getHours()).toBe(new Date(base.date).getHours());
+    });
+  });
+
+  it('ajusta el día si el mes de destino tiene menos días (ej: 31 de enero -> febrero)', () => {
+    // con cierre el día 15, una compra el 31/01 (después del cierre) ya
+    // entra en el resumen de febrero desde la primera cuota
+    const jan31Base = { ...base, date: '2026-01-31T10:00:00.000Z' };
+    const result = generateInstallments(jan31Base, 2, 15);
+
+    expect(new Date(result[0].date).getMonth()).toBe(1); // febrero
+    expect(new Date(result[0].date).getDate()).toBeLessThanOrEqual(28);
+
+    // marzo sí tiene 31 días, así que la segunda cuota no necesita clamp
+    expect(new Date(result[1].date).getMonth()).toBe(2); // marzo
+    expect(new Date(result[1].date).getDate()).toBe(31);
+  });
 });

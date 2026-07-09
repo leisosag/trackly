@@ -174,7 +174,13 @@ describe('MovementForm', () => {
   });
 
   it('permite editar la fecha y la incluye en el movimiento creado', async () => {
-    const user = userEvent.setup();
+    // Se fija la hora en mediodía (no medianoche) para evitar que el salto
+    // local -> UTC de applyDateToIso empuje la fecha al día siguiente según
+    // la hora real en que corran los tests (ver Test timezone safety).
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-07-01T12:00:00'));
+
+    const user = userEvent.setup({ delay: null });
     const handleSubmit = vi.fn();
     render(<MovementForm onSubmit={handleSubmit} />);
 
@@ -190,6 +196,8 @@ describe('MovementForm', () => {
 
     const submittedDate = handleSubmit.mock.calls[0][0].date;
     expect(submittedDate.slice(0, 10)).toBe('2026-07-20');
+
+    vi.useRealTimers();
   });
 
   it('no muestra el selector de medio de pago para una categoría de ingreso', async () => {
@@ -362,6 +370,71 @@ describe('MovementForm', () => {
 
     expect(handleSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ installmentsCount: undefined }),
+    );
+  });
+
+  it('al editar una cuota existente, preserva installment y statementPeriod aunque solo se cambie la descripción', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+
+    render(
+      <MovementForm
+        mode="edit"
+        initialMovement={{
+          id: '1',
+          categoryId: 'shopping',
+          amount: 100,
+          date: '2026-08-05T10:00:00.000Z',
+          paymentMethodId: 'default-card',
+          statementPeriod: '2026-08',
+          installment: { groupId: 'g1', number: 2, total: 3 },
+        }}
+        onSubmit={handleSubmit}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /editar/i }));
+    await user.type(screen.getByLabelText(/descripción/i), 'Compra online');
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        description: 'Compra online',
+        statementPeriod: '2026-08',
+        installment: { groupId: 'g1', number: 2, total: 3 },
+      }),
+    );
+  });
+
+  it('al cambiar el medio de pago a uno que no es tarjeta de crédito, limpia installment y statementPeriod', async () => {
+    const user = userEvent.setup();
+    const handleSubmit = vi.fn();
+
+    render(
+      <MovementForm
+        mode="edit"
+        initialMovement={{
+          id: '1',
+          categoryId: 'shopping',
+          amount: 100,
+          date: '2026-08-05T10:00:00.000Z',
+          paymentMethodId: 'default-card',
+          statementPeriod: '2026-08',
+          installment: { groupId: 'g1', number: 2, total: 3 },
+        }}
+        onSubmit={handleSubmit}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /editar/i }));
+    await user.selectOptions(screen.getByLabelText(/medio de pago/i), 'cash');
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(handleSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statementPeriod: undefined,
+        installment: undefined,
+      }),
     );
   });
 });

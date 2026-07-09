@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CreditCardsPage } from './CreditCardsPage';
 import { SelectedMonthProvider } from '@/shared/context';
+import { Toaster } from 'sonner';
 
 function seedMovements() {
   localStorage.setItem(
@@ -33,6 +34,15 @@ function seedMovements() {
         statementPeriod: '2026-08',
       },
     ]),
+  );
+}
+
+function renderPage() {
+  return render(
+    <SelectedMonthProvider>
+      <Toaster />
+      <CreditCardsPage />
+    </SelectedMonthProvider>,
   );
 }
 
@@ -230,5 +240,79 @@ describe('CreditCardsPage', () => {
     expect(screen.getByText(/Cierre día 10/)).not.toHaveTextContent(
       'Desactivada',
     );
+  });
+
+  it('muestra un toast recordando actualizar el cierre si no fue confirmado este mes', async () => {
+    localStorage.setItem(
+      'creditCards',
+      JSON.stringify([
+        {
+          id: 'default-card',
+          name: 'Tarjeta principal',
+          closingDay: 15,
+          isActive: true,
+          closingDayConfirmedPeriod: '2026-06', // mes anterior
+        },
+      ]),
+    );
+
+    renderPage();
+
+    // función matcher: sonner puede envolver el texto del toast en más de
+    // un nodo interno, por eso se ignora el markup y se compara el texto
+    // acumulado del elemento contenedor en vez de un string/regex exacto
+    const expectedText =
+      'Recordá actualizar la fecha de cierre de Tarjeta principal para este mes';
+
+    expect(
+      await screen.findByText((_, element) => {
+        if (!element?.textContent?.includes(expectedText)) return false;
+        return !Array.from(element.children).some((child) =>
+          child.textContent?.includes(expectedText),
+        );
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('no muestra el toast si el cierre ya fue confirmado en el mes actual', () => {
+    localStorage.setItem(
+      'creditCards',
+      JSON.stringify([
+        {
+          id: 'default-card',
+          name: 'Tarjeta principal',
+          closingDay: 15,
+          isActive: true,
+          closingDayConfirmedPeriod: '2026-07', // mes actual
+        },
+      ]),
+    );
+
+    renderPage();
+
+    expect(
+      screen.queryByText(/Recordá actualizar la fecha de cierre/),
+    ).not.toBeInTheDocument();
+  });
+
+  it('no muestra el toast para una tarjeta desactivada', () => {
+    localStorage.setItem(
+      'creditCards',
+      JSON.stringify([
+        {
+          id: 'default-card',
+          name: 'Tarjeta principal',
+          closingDay: 15,
+          isActive: false,
+          closingDayConfirmedPeriod: '2026-06',
+        },
+      ]),
+    );
+
+    renderPage();
+
+    expect(
+      screen.queryByText(/Recordá actualizar la fecha de cierre/),
+    ).not.toBeInTheDocument();
   });
 });

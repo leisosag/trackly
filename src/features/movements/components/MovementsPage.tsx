@@ -27,8 +27,9 @@ export function MovementsPage() {
     toast.success('Movimiento cargado');
   }
 
-  function handleUpdate(id: string, movement: Omit<Movement, 'id'>) {
-    updateMovement(id, movement);
+  function handleUpdate(id: string, movement: NewMovementInput) {
+    const { installmentsCount: _installmentsCount, ...rest } = movement;
+    updateMovement(id, rest);
     setFormState(null);
     toast.success('Movimiento actualizado');
   }

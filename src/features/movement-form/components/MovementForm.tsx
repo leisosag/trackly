@@ -120,6 +120,17 @@ export function MovementForm({
       installmentsCount: showInstallmentsField
         ? numericInstallments
         : undefined,
+      // Al editar, se preserva la cuota/resumen original tal cual estaban
+      // (este formulario no permite recalcular cuotas en modo edición). Si
+      // se cambia el medio de pago a algo que ya no es tarjeta, se limpian
+      // para no dejar metadata de cuota huérfana en un movimiento que dejó
+      // de ser crédito.
+      installment: isCreditPaymentMethod
+        ? initialMovement?.installment
+        : undefined,
+      statementPeriod: isCreditPaymentMethod
+        ? initialMovement?.statementPeriod
+        : undefined,
     });
 
     if (mode === 'create') {

@@ -70,7 +70,7 @@ describe('MovementItem', () => {
     const movement: Movement = {
       id: '5',
       categoryId: 'food',
-      paymentMethodId: 'credit',
+      paymentMethodId: 'default-card',
       amount: 1500,
       date: '2026-07-01T10:00:00.000Z',
     };
@@ -79,5 +79,37 @@ describe('MovementItem', () => {
 
     const categoryName = screen.getByText('Comida');
     expect(categoryName.querySelector('svg')).toBeInTheDocument();
+  });
+
+  it('muestra "Cuota N/total" y el nombre de la tarjeta para una compra en cuotas', () => {
+    const movement: Movement = {
+      id: '6',
+      categoryId: 'shopping',
+      amount: 100,
+      date: '2026-07-05T10:00:00.000Z',
+      paymentMethodId: 'default-card',
+      statementPeriod: '2026-08',
+      installment: { groupId: 'g1', number: 2, total: 3 },
+    };
+
+    render(<MovementItem movement={movement} />);
+
+    expect(
+      screen.getByText('Cuota 2/3 · Tarjeta principal'),
+    ).toBeInTheDocument();
+  });
+
+  it('no muestra la línea de cuotas para un movimiento sin installment', () => {
+    const movement: Movement = {
+      id: '7',
+      categoryId: 'food',
+      amount: 1500,
+      date: '2026-07-01T10:00:00.000Z',
+      paymentMethodId: 'debit',
+    };
+
+    render(<MovementItem movement={movement} />);
+
+    expect(screen.queryByText(/Cuota/)).not.toBeInTheDocument();
   });
 });

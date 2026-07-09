@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { Toaster } from 'sonner';
-import { WalletIcon, ChartPieIcon } from '@phosphor-icons/react';
+import {
+  WalletIcon,
+  ChartPieIcon,
+  CreditCardIcon,
+} from '@phosphor-icons/react';
 import { MovementsPage } from '@/features/movements';
 import { BottomNav, MonthSelector, type NavItem } from '@/shared/components';
 import { BudgetsPage } from '@/features/budgets';
+import { CreditCardsPage } from './features/credit-cards';
 
-type AppSection = 'movements' | 'budgets';
+type AppSection = 'movements' | 'budgets' | 'credit-cards';
 
 function App() {
   const [activeSection, setActiveSection] = useState<AppSection>('movements');
@@ -13,6 +18,7 @@ function App() {
   const NAV_ITEMS: NavItem[] = [
     { id: 'movements', label: 'Movimientos', icon: WalletIcon },
     { id: 'budgets', label: 'Presupuestos', icon: ChartPieIcon },
+    { id: 'credit-cards', label: 'Tarjetas', icon: CreditCardIcon },
   ];
 
   return (
@@ -32,6 +38,8 @@ function App() {
       {activeSection === 'movements' && <MovementsPage />}
 
       {activeSection === 'budgets' && <BudgetsPage />}
+
+      {activeSection === 'credit-cards' && <CreditCardsPage />}
 
       <BottomNav
         items={NAV_ITEMS}

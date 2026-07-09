@@ -39,6 +39,33 @@ describe('movementsRepository', () => {
     expect(movementsRepository.getAll()).toHaveLength(2);
   });
 
+  it('crea varios movimientos de una vez y los persiste', () => {
+    const created = movementsRepository.createMany([
+      { categoryId: 'food', amount: 100, date: '2026-07-01T10:00:00.000Z' },
+      { categoryId: 'food', amount: 100, date: '2026-08-01T10:00:00.000Z' },
+    ]);
+
+    expect(created).toHaveLength(2);
+    expect(created[0].id).toBeDefined();
+    expect(created[1].id).toBeDefined();
+    expect(movementsRepository.getAll()).toHaveLength(2);
+  });
+
+  it('createMany no pisa los movimientos ya existentes', () => {
+    movementsRepository.create({
+      categoryId: 'salary',
+      amount: 5000,
+      date: '2026-07-01',
+    });
+
+    movementsRepository.createMany([
+      { categoryId: 'food', amount: 100, date: '2026-07-01T10:00:00.000Z' },
+      { categoryId: 'food', amount: 100, date: '2026-08-01T10:00:00.000Z' },
+    ]);
+
+    expect(movementsRepository.getAll()).toHaveLength(3);
+  });
+
   it('actualiza un movimiento existente', () => {
     const created = movementsRepository.create({
       categoryId: 'food',

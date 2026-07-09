@@ -6,6 +6,8 @@ import {
   getTodayInputValue,
   isoToInputValue,
   applyDateToIso,
+  generateInstallments,
+  formatPeriodLabel,
 } from '@/shared/utils';
 import {
   CategoryIcon,
@@ -15,14 +17,17 @@ import {
   DescriptionField,
   PaymentMethodSelect,
 } from '@/shared/components';
-import type { Movement } from '@/features/movements';
+import type { Movement, NewMovementInput } from '@/features/movements';
+import { getCreditCardById } from '@/features/credit-cards';
+import { getPaymentMethodById } from '@/features/payment-methods';
+import { InstallmentsField } from './InstallmentsField';
 
 type Step = 'category' | 'amount';
 
 interface MovementFormProps {
   mode?: 'create' | 'edit';
   initialMovement?: Movement;
-  onSubmit: (movement: Omit<Movement, 'id'>) => void;
+  onSubmit: (movement: NewMovementInput) => void;
   onDelete?: () => void;
 }
 
@@ -53,12 +58,48 @@ export function MovementForm({
     initialMovement?.paymentMethodId ?? 'debit',
   );
   const [enableFields, setEnableFields] = useState(false);
+  const [installmentsCount, setInstallmentsCount] = useState('1');
 
   const selectedCategory = selectedCategoryId
     ? getCategoryById(selectedCategoryId)
     : undefined;
 
   const isExpenseCategory = selectedCategory?.type === 'expense';
+
+  const selectedPaymentMethod = getPaymentMethodById(paymentMethodId);
+  const isCreditPaymentMethod = selectedPaymentMethod?.kind === 'credit';
+  // Solo se pide cantidad de cuotas al crear un movimiento nuevo: no tiene
+  // sentido reconfigurar cuotas de una compra ya cargada.
+  const showInstallmentsField =
+    mode === 'create' && isExpenseCategory && isCreditPaymentMethod;
+
+  const numericInstallments = Number(installmentsCount);
+  const isInstallmentsValid =
+    !showInstallmentsField ||
+    (Number.isInteger(numericInstallments) && numericInstallments >= 1);
+
+  const selectedCard = isCreditPaymentMethod
+    ? getCreditCardById(paymentMethodId)
+    : undefined;
+
+  // Vista previa de en qué resúmenes va a caer cada cuota, para que la usuaria vea el impacto antes de guardar.
+  // Reutiliza generateInstallments (no se persiste nada acá, es solo para mostrar en pantalla).
+  const previewPeriods =
+    showInstallmentsField && selectedCard && isInstallmentsValid
+      ? generateInstallments(
+          {
+            categoryId: selectedCategoryId ?? '',
+            amount: 0,
+            date: applyDateToIso(
+              initialMovement?.date ?? new Date().toISOString(),
+              dateValue,
+            ),
+            paymentMethodId,
+          },
+          numericInstallments,
+          selectedCard.closingDay,
+        ).map((m) => formatPeriodLabel(m.statementPeriod!))
+      : [];
 
   function handleCategorySelect(categoryId: string) {
     setSelectedCategoryId(categoryId);
@@ -76,6 +117,20 @@ export function MovementForm({
       amount,
       date: applyDateToIso(baseIso, dateValue),
       paymentMethodId: isExpenseCategory ? paymentMethodId : undefined,
+      installmentsCount: showInstallmentsField
+        ? numericInstallments
+        : undefined,
+      // Al editar, se preserva la cuota/resumen original tal cual estaban
+      // (este formulario no permite recalcular cuotas en modo edición). Si
+      // se cambia el medio de pago a algo que ya no es tarjeta, se limpian
+      // para no dejar metadata de cuota huérfana en un movimiento que dejó
+      // de ser crédito.
+      installment: isCreditPaymentMethod
+        ? initialMovement?.installment
+        : undefined,
+      statementPeriod: isCreditPaymentMethod
+        ? initialMovement?.statementPeriod
+        : undefined,
     });
 
     if (mode === 'create') {
@@ -84,6 +139,7 @@ export function MovementForm({
       setDescription('');
       setExpression('');
       setDateValue(getTodayInputValue());
+      setInstallmentsCount('1');
     }
   }
 
@@ -124,8 +180,8 @@ export function MovementForm({
 
         {mode === 'edit' && (
           <div className="flex gap-2">
-            {onDelete && <ConfirmDeleteButton onConfirm={onDelete} iconOnly />}
-            <ConfirmEditButton onConfirm={handleEnableFields} iconOnly />
+            {onDelete && <ConfirmDeleteButton onConfirm={onDelete} />}
+            <ConfirmEditButton onConfirm={handleEnableFields} />
           </div>
         )}
       </div>
@@ -142,6 +198,13 @@ export function MovementForm({
           disabled={mode === 'edit' ? !enableFields : false}
         />
       )}
+      {showInstallmentsField && (
+        <InstallmentsField
+          value={installmentsCount}
+          onChange={setInstallmentsCount}
+          periodLabels={previewPeriods}
+        />
+      )}
       <DescriptionField
         value={description}
         onChange={setDescription}
@@ -153,6 +216,7 @@ export function MovementForm({
         onExpressionChange={setExpression}
         onConfirm={handleAmountConfirm}
         disabled={mode === 'edit' ? !enableFields : false}
+        confirmDisabled={!isInstallmentsValid}
       />
     </div>
   );

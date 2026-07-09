@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { useMovements } from '../hooks/useMovements';
 import { BalanceHeader } from './BalanceHeader';
 import { MovementList } from './MovementList';
-import type { Movement } from '../types';
+import type { Movement, NewMovementInput } from '../types';
 import { Fab, Modal } from '@/shared/components';
 import { MovementForm } from '@/features/movement-form';
 import { useSelectedMonth } from '@/shared/context';
@@ -21,14 +21,15 @@ export function MovementsPage() {
 
   const [formState, setFormState] = useState<FormState | null>(null);
 
-  function handleCreate(movement: Omit<Movement, 'id'>) {
+  function handleCreate(movement: NewMovementInput) {
     addMovement(movement);
     setFormState(null);
     toast.success('Movimiento cargado');
   }
 
-  function handleUpdate(id: string, movement: Omit<Movement, 'id'>) {
-    updateMovement(id, movement);
+  function handleUpdate(id: string, movement: NewMovementInput) {
+    const { installmentsCount: _installmentsCount, ...rest } = movement;
+    updateMovement(id, rest);
     setFormState(null);
     toast.success('Movimiento actualizado');
   }
@@ -55,7 +56,6 @@ export function MovementsPage() {
       <Fab
         onClick={() => setFormState({ mode: 'create' })}
         label="Agregar movimiento"
-        className="fixed bottom-6 left-1/2 z-6 -translate-x-1/2"
       />
 
       <Modal

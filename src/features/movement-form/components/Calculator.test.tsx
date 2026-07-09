@@ -19,6 +19,22 @@ function ControlledCalculator({
   );
 }
 
+function ControlledCalculatorWithConfirmDisabled({
+  onConfirm,
+}: {
+  onConfirm: (amount: number) => void;
+}) {
+  const [expression, setExpression] = useState('');
+  return (
+    <Calculator
+      expression={expression}
+      onExpressionChange={setExpression}
+      onConfirm={onConfirm}
+      confirmDisabled
+    />
+  );
+}
+
 describe('Calculator', () => {
   it('muestra la expresión a medida que se tocan las teclas', async () => {
     const user = userEvent.setup();
@@ -45,6 +61,18 @@ describe('Calculator', () => {
   it('el botón confirmar está deshabilitado sin una expresión válida', () => {
     render(<ControlledCalculator onConfirm={() => {}} />);
 
+    expect(screen.getByRole('button', { name: /guardar/i })).toBeDisabled();
+  });
+
+  it('confirmDisabled bloquea el guardado sin deshabilitar el teclado numérico', async () => {
+    const user = userEvent.setup();
+    render(<ControlledCalculatorWithConfirmDisabled onConfirm={() => {}} />);
+
+    await user.click(screen.getByText('1'));
+    await user.click(screen.getByText('5'));
+    await user.click(screen.getByText('0'));
+
+    expect(screen.getByTestId('expression-display')).toHaveTextContent('150');
     expect(screen.getByRole('button', { name: /guardar/i })).toBeDisabled();
   });
 

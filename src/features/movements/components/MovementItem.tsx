@@ -16,6 +16,11 @@ export function MovementItem({ movement, onClick }: MovementItemProps) {
   const paymentMethod = movement.paymentMethodId
     ? getPaymentMethodById(movement.paymentMethodId)
     : undefined;
+  const installmentLabel = movement.installment
+    ? `Cuota ${movement.installment.number}/${movement.installment.total}${
+        paymentMethod ? ` · ${paymentMethod.name}` : ''
+      }`
+    : undefined;
 
   return (
     <button
@@ -25,7 +30,7 @@ export function MovementItem({ movement, onClick }: MovementItemProps) {
     >
       {category && <CategoryIcon category={category} />}
 
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 gap-1">
         <p className="flex items-end gap-2 font-medium text-neutral-900 dark:text-mauve-50">
           {category?.name ?? 'Sin categoría'}
           {paymentMethod?.kind === 'credit' && (
@@ -38,6 +43,11 @@ export function MovementItem({ movement, onClick }: MovementItemProps) {
         {movement.description && (
           <p className="truncate text-sm text-neutral-500 dark:text-mauve-400">
             {movement.description}
+          </p>
+        )}
+        {installmentLabel && (
+          <p className="truncate text-xs text-neutral-400 dark:text-mauve-500">
+            {installmentLabel}
           </p>
         )}
       </div>

@@ -10,12 +10,7 @@ import {
   generateInstallments,
   formatPeriodLabel,
 } from '@/shared/utils';
-import {
-  CategoryIcon,
-  ConfirmDeleteButton,
-  ConfirmEditButton,
-  Input,
-} from '@/shared/components';
+import { CategoryIcon, ConfirmActionButton, Input } from '@/shared/components';
 import type { Movement, NewMovementInput } from '@/features/movements';
 import { getCreditCardById } from '@/features/credit-cards';
 import { getPaymentMethodById } from '@/features/payment-methods';
@@ -181,8 +176,13 @@ export function MovementForm({
 
         {mode === 'edit' && (
           <div className="flex gap-2">
-            {onDelete && <ConfirmDeleteButton onConfirm={onDelete} />}
-            <ConfirmEditButton onConfirm={handleEnableFields} />
+            {onDelete && (
+              <ConfirmActionButton variant="delete" onConfirm={onDelete} />
+            )}
+            <ConfirmActionButton
+              variant="edit"
+              onConfirm={handleEnableFields}
+            />
           </div>
         )}
       </div>

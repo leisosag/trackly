@@ -1,12 +1,7 @@
 import { useState } from 'react';
 import { PencilSimpleIcon, CurrencyDollarIcon } from '@phosphor-icons/react';
 import { CategoryMultiSelect } from './CategoryMultiSelect';
-import {
-  ConfirmButton,
-  ConfirmDeleteButton,
-  ConfirmEditButton,
-  Input,
-} from '@/shared/components';
+import { ConfirmActionButton, ConfirmButton, Input } from '@/shared/components';
 import type { Budget } from '@/features/budgets';
 
 interface BudgetFormProps {
@@ -68,9 +63,10 @@ export function BudgetForm({
       {mode === 'edit' && (
         <div className="grid grid-cols-2 gap-2 pt-1 sm:flex sm:justify-end">
           {!isGeneral && onDelete && (
-            <ConfirmDeleteButton onConfirm={onDelete} />
+            <ConfirmActionButton variant="delete" onConfirm={onDelete} />
           )}
-          <ConfirmEditButton
+          <ConfirmActionButton
+            variant="edit"
             onConfirm={handleEnableFields}
             className={isGeneral ? 'col-span-2' : ''}
           />

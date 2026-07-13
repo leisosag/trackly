@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { PencilSimpleIcon, CalendarDotsIcon } from '@phosphor-icons/react';
-import {
-  ConfirmButton,
-  ConfirmDeleteButton,
-  ConfirmEditButton,
-  Input,
-} from '@/shared/components';
+import { ConfirmButton, ConfirmActionButton, Input } from '@/shared/components';
 import type { CreditCard } from '../types';
 
 interface CreditCardFormProps {
@@ -61,21 +56,23 @@ export function CreditCardForm({
         <>
           <div className="grid grid-cols-2 gap-2 pt-1 sm:flex sm:justify-end">
             {initialCard?.isActive && onDeactivate && canDeactivate && (
-              // TODO: hacer un componente activate button
-              <ConfirmDeleteButton
+              <ConfirmActionButton
+                variant="delete"
                 onConfirm={onDeactivate}
                 label="Desactivar"
                 confirmLabel="Sí, desactivar"
               />
             )}
             {!initialCard?.isActive && onActivate && (
-              <ConfirmDeleteButton
+              <ConfirmActionButton
+                variant="activate"
                 onConfirm={onActivate}
                 label="Activar"
                 confirmLabel="Sí, activar"
               />
             )}
-            <ConfirmEditButton
+            <ConfirmActionButton
+              variant="edit"
               onConfirm={handleEnableFields}
               className={
                 initialCard?.isActive && !canDeactivate ? 'col-span-2' : ''

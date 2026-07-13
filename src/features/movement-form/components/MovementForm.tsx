@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PencilSimpleIcon } from '@phosphor-icons/react';
 import { Calculator } from './Calculator';
 import { CategoryPicker } from './CategoryPicker';
 import { getCategoryById } from '@/features/categories';
@@ -13,7 +14,7 @@ import {
   CategoryIcon,
   ConfirmDeleteButton,
   ConfirmEditButton,
-  DescriptionField,
+  Input,
 } from '@/shared/components';
 import type { Movement, NewMovementInput } from '@/features/movements';
 import { getCreditCardById } from '@/features/credit-cards';
@@ -191,6 +192,7 @@ export function MovementForm({
         onChange={setDateValue}
         disabled={mode === 'edit' ? !enableFields : false}
       />
+
       {isExpenseCategory && (
         <PaymentMethodSelect
           value={paymentMethodId}
@@ -198,6 +200,7 @@ export function MovementForm({
           disabled={mode === 'edit' ? !enableFields : false}
         />
       )}
+
       {showInstallmentsField && (
         <InstallmentsField
           value={installmentsCount}
@@ -205,9 +208,13 @@ export function MovementForm({
           periodLabels={previewPeriods}
         />
       )}
-      <DescriptionField
+
+      <Input
         value={description}
         onChange={setDescription}
+        ariaLabel="Descripción del movimiento"
+        placeholder="Descripción (opcional)"
+        icon={PencilSimpleIcon}
         disabled={mode === 'edit' ? !enableFields : false}
       />
 

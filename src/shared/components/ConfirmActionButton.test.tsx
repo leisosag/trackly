@@ -80,3 +80,80 @@ describe('ConfirmActionButton', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('confirmVia="modal"', () => {
+  it('abre el modal de confirmación al hacer click, sin llamar a onConfirm todavía', async () => {
+    const user = userEvent.setup();
+    const handleConfirm = vi.fn();
+    render(
+      <ConfirmActionButton
+        variant="delete"
+        onConfirm={handleConfirm}
+        confirmVia="modal"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Eliminar' }));
+
+    expect(handleConfirm).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole('button', { name: 'Sí, eliminar' }),
+    ).toBeInTheDocument();
+  });
+
+  it('llama a onConfirm y cierra el modal al tocar "Sí, eliminar"', async () => {
+    const user = userEvent.setup();
+    const handleConfirm = vi.fn();
+    render(
+      <ConfirmActionButton
+        variant="delete"
+        onConfirm={handleConfirm}
+        confirmVia="modal"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Eliminar' }));
+    await user.click(screen.getByRole('button', { name: 'Sí, eliminar' }));
+
+    expect(handleConfirm).toHaveBeenCalledOnce();
+    expect(
+      screen.queryByRole('button', { name: 'Sí, eliminar' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('no llama a onConfirm y cierra el modal al tocar "Cancelar"', async () => {
+    const user = userEvent.setup();
+    const handleConfirm = vi.fn();
+    render(
+      <ConfirmActionButton
+        variant="delete"
+        onConfirm={handleConfirm}
+        confirmVia="modal"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Eliminar' }));
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }));
+
+    expect(handleConfirm).not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole('button', { name: 'Sí, eliminar' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('usa confirmMessage personalizado cuando se provee', async () => {
+    const user = userEvent.setup();
+    render(
+      <ConfirmActionButton
+        variant="delete"
+        onConfirm={() => {}}
+        confirmVia="modal"
+        confirmMessage="Se va a borrar todo, ojo."
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Eliminar' }));
+
+    expect(screen.getByText('Se va a borrar todo, ojo.')).toBeInTheDocument();
+  });
+});

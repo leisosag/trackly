@@ -6,9 +6,11 @@ import {
   type Icon,
 } from '@phosphor-icons/react';
 import { cn } from '../utils';
+import { Modal } from './Modal';
 
 type Variant = 'edit' | 'delete' | 'activate';
 type Mode = 'toggle' | 'confirm';
+type ConfirmVia = 'inline' | 'modal';
 
 interface VariantConfig {
   icon: Icon;
@@ -59,6 +61,8 @@ interface ConfirmActionButtonProps {
   label?: string;
   confirmLabel?: string;
   iconOnly?: boolean;
+  confirmVia?: ConfirmVia;
+  confirmMessage?: string;
   className?: string;
 }
 
@@ -69,6 +73,8 @@ export function ConfirmActionButton({
   label,
   confirmLabel,
   iconOnly = false,
+  confirmVia = 'inline',
+  confirmMessage = 'Esta acción no se puede deshacer.',
   className,
 }: ConfirmActionButtonProps) {
   const config = VARIANT_CONFIG[variant];
@@ -78,8 +84,14 @@ export function ConfirmActionButton({
   const Icon = config.icon;
 
   const [active, setActive] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   function handleClick() {
+    if (confirmVia === 'modal') {
+      setModalOpen(true);
+      return;
+    }
+
     if (resolvedMode === 'toggle') {
       setActive((prev) => !prev);
       onConfirm();
@@ -93,19 +105,57 @@ export function ConfirmActionButton({
     }
   }
 
+  function handleModalConfirm() {
+    setModalOpen(false);
+    onConfirm();
+  }
+
   return (
-    <button
-      type="button"
-      aria-label={active ? resolvedConfirmLabel : resolvedLabel}
-      onClick={handleClick}
-      className={cn(
-        'flex items-center justify-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium hover:cursor-pointer border',
-        active ? config.activeClasses : config.idleClasses,
-        className,
+    <>
+      <button
+        type="button"
+        aria-label={active ? resolvedConfirmLabel : resolvedLabel}
+        onClick={handleClick}
+        className={cn(
+          'flex items-center justify-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium hover:cursor-pointer border',
+          active ? config.activeClasses : config.idleClasses,
+          className,
+        )}
+      >
+        <Icon size={16} />
+        {!iconOnly && (active ? resolvedConfirmLabel : resolvedLabel)}
+      </button>
+
+      {confirmVia === 'modal' && (
+        <Modal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          title={resolvedLabel}
+          level={3}
+        >
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-neutral-600 dark:text-mauve-300">
+              {confirmMessage}
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                className="rounded-xl px-3 py-1.5 text-sm font-medium text-neutral-500 dark:text-mauve-300 hover:bg-neutral-100 dark:hover:bg-mauve-700/40 hover:cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleModalConfirm}
+                className="rounded-xl bg-red-600 dark:bg-rose-500/15 dark:text-rose-300 dark:border dark:border-rose-400/20 px-3 py-1.5 text-sm font-medium text-white hover:cursor-pointer"
+              >
+                {resolvedConfirmLabel}
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
-    >
-      <Icon size={16} />
-      {!iconOnly && (active ? resolvedConfirmLabel : resolvedLabel)}
-    </button>
+    </>
   );
 }

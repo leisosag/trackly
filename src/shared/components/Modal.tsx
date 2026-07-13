@@ -7,7 +7,7 @@ interface ModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  level?: 1 | 2;
+  level?: 1 | 2 | 3;
   children: ReactNode;
   className?: string;
 }
@@ -15,6 +15,7 @@ interface ModalProps {
 const Z_LEVELS = {
   1: { overlay: 'z-8', content: 'z-10' },
   2: { overlay: 'z-18', content: 'z-20' },
+  3: { overlay: 'z-28', content: 'z-30' },
 } as const;
 
 export function Modal({

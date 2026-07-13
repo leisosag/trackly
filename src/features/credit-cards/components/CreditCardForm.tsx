@@ -61,6 +61,7 @@ export function CreditCardForm({
                 onConfirm={onDeactivate}
                 label="Desactivar"
                 confirmLabel="Sí, desactivar"
+                confirmVia="modal"
               />
             )}
             {!initialCard?.isActive && onActivate && (

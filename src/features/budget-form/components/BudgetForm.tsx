@@ -67,7 +67,11 @@ export function BudgetForm({
       {mode === 'edit' && (
         <div className="grid grid-cols-2 gap-2 pt-1 sm:flex sm:justify-end">
           {!isGeneral && onDelete && (
-            <ConfirmActionButton variant="delete" onConfirm={onDelete} />
+            <ConfirmActionButton
+              variant="delete"
+              onConfirm={onDelete}
+              confirmVia="modal"
+            />
           )}
           <ConfirmActionButton
             variant="edit"

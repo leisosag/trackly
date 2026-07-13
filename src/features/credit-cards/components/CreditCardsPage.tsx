@@ -153,6 +153,7 @@ export function CreditCardsPage() {
         open={formState !== null}
         onOpenChange={(open) => !open && setFormState(null)}
         title={formState?.mode === 'edit' ? 'Editar tarjeta' : 'Nueva tarjeta'}
+        level={2}
       >
         {formState?.mode === 'create' && (
           <CreditCardForm

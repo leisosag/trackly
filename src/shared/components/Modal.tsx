@@ -7,24 +7,39 @@ interface ModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
+  level?: 1 | 2;
   children: ReactNode;
   className?: string;
 }
+
+const Z_LEVELS = {
+  1: { overlay: 'z-8', content: 'z-10' },
+  2: { overlay: 'z-18', content: 'z-20' },
+} as const;
 
 export function Modal({
   open,
   onOpenChange,
   title,
+  level = 1,
   children,
   className,
 }: ModalProps) {
+  const z = Z_LEVELS[level];
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/40 data-[state=open]:animate-in data-[state=open]:fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out z-8" />
+        <Dialog.Overlay
+          className={cn(
+            'fixed inset-0 bg-black/40 data-[state=open]:animate-in data-[state=open]:fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out',
+            z.overlay,
+          )}
+        />
         <Dialog.Content
           className={cn(
-            'fixed bottom-0 left-0 right-0 max-h-[90vh] overflow-y-auto rounded-t-2xl bg-white dark:bg-mauve-800 p-4 sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl z-10',
+            'fixed bottom-0 left-0 right-0 max-h-[90vh] overflow-y-auto rounded-t-2xl bg-white dark:bg-mauve-800 p-4 sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl',
+            z.content,
             className,
           )}
           onInteractOutside={(event) => {

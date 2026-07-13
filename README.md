@@ -34,7 +34,7 @@ src/
 │       ├── utils/                 # evaluateExpression (parser de la calculadora)
 │       └── index.ts
 ├── shared/
-│   ├── components/                # Fab, Modal, DateField, DescriptionField
+│   ├── components/                # Fab, Modal, DescriptionField
 │   └── utils/                     # groupByDay, formatCurrency, calculateSummary,
 │                                    # dateInput, iconMap
 └── App.tsx                        # composición: conecta features entre sí

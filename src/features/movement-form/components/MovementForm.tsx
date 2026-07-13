@@ -13,14 +13,14 @@ import {
   CategoryIcon,
   ConfirmDeleteButton,
   ConfirmEditButton,
-  DateField,
   DescriptionField,
-  PaymentMethodSelect,
 } from '@/shared/components';
 import type { Movement, NewMovementInput } from '@/features/movements';
 import { getCreditCardById } from '@/features/credit-cards';
 import { getPaymentMethodById } from '@/features/payment-methods';
 import { InstallmentsField } from './InstallmentsField';
+import { DateField } from './DateField';
+import { PaymentMethodSelect } from './PaymentMethodSelect';
 
 type Step = 'category' | 'amount';
 

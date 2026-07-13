@@ -26,3 +26,4 @@ export {
   groupMovementsByCard,
   type CardMovementGroup,
 } from './groupMovementsByCard';
+export { formatAmountInput, parseAmountInput } from './amountInput';

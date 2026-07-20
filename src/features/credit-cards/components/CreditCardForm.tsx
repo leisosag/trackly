@@ -1,10 +1,6 @@
 import { useState } from 'react';
-import { PencilSimpleIcon } from '@phosphor-icons/react';
-import {
-  ConfirmButton,
-  ConfirmDeleteButton,
-  ConfirmEditButton,
-} from '@/shared/components';
+import { PencilSimpleIcon, CalendarDotsIcon } from '@phosphor-icons/react';
+import { ConfirmButton, ConfirmActionButton, Input } from '@/shared/components';
 import type { CreditCard } from '../types';
 
 interface CreditCardFormProps {
@@ -60,21 +56,24 @@ export function CreditCardForm({
         <>
           <div className="grid grid-cols-2 gap-2 pt-1 sm:flex sm:justify-end">
             {initialCard?.isActive && onDeactivate && canDeactivate && (
-              // TODO: hacer un componente activate button
-              <ConfirmDeleteButton
+              <ConfirmActionButton
+                variant="delete"
                 onConfirm={onDeactivate}
                 label="Desactivar"
                 confirmLabel="Sí, desactivar"
+                confirmVia="modal"
               />
             )}
             {!initialCard?.isActive && onActivate && (
-              <ConfirmDeleteButton
+              <ConfirmActionButton
+                variant="activate"
                 onConfirm={onActivate}
                 label="Activar"
                 confirmLabel="Sí, activar"
               />
             )}
-            <ConfirmEditButton
+            <ConfirmActionButton
+              variant="edit"
               onConfirm={handleEnableFields}
               className={
                 initialCard?.isActive && !canDeactivate ? 'col-span-2' : ''
@@ -91,37 +90,27 @@ export function CreditCardForm({
         </>
       )}
 
-      <div className="flex items-center gap-2 rounded-lg border border-neutral-200 px-3 py-2.5">
-        <PencilSimpleIcon
-          size={18}
-          className="shrink-0 text-neutral-400 dark:text-mauve-400"
-        />
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={mode === 'edit' ? !enableFields : false}
-          placeholder="Nombre de la tarjeta"
-          aria-label="Nombre de la tarjeta"
-          className="w-full text-sm text-neutral-900 dark:text-mauve-50 outline-none placeholder:text-neutral-400"
-        />
-      </div>
+      <Input
+        value={name}
+        onChange={(value) => setName(value)}
+        ariaLabel="Nombre de la tarjeta"
+        placeholder="Nombre de la tarjeta"
+        icon={PencilSimpleIcon}
+        disabled={mode === 'edit' ? !enableFields : false}
+      />
 
-      <div className="flex items-center gap-2 rounded-lg border border-neutral-200 px-3 py-2.5">
-        <span className="text-sm text-neutral-400">Día</span>
-        <input
-          type="number"
-          inputMode="numeric"
-          min={1}
-          max={31}
-          value={closingDay}
-          onChange={(e) => setClosingDay(e.target.value)}
-          disabled={mode === 'edit' ? !enableFields : false}
-          placeholder="Día de cierre"
-          aria-label="Día de cierre"
-          className="w-full text-sm text-neutral-900 dark:text-mauve-50 outline-none placeholder:text-neutral-400"
-        />
-      </div>
+      <Input
+        type="number"
+        inputMode="numeric"
+        min={1}
+        max={31}
+        value={closingDay}
+        onChange={(value) => setClosingDay(value)}
+        ariaLabel="Día de cierre"
+        placeholder="Día de cierre"
+        icon={CalendarDotsIcon}
+        disabled={mode === 'edit' ? !enableFields : false}
+      />
 
       <ConfirmButton
         onConfirm={handleSubmit}

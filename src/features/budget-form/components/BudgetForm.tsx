@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { PencilSimpleIcon } from '@phosphor-icons/react';
 import { CategoryMultiSelect } from './CategoryMultiSelect';
-import {
-  ConfirmButton,
-  ConfirmDeleteButton,
-  ConfirmEditButton,
-} from '@/shared/components';
+import { AmountInput } from './AmountInput';
+import { ConfirmActionButton, ConfirmButton, Input } from '@/shared/components';
+import { formatAmountInput, parseAmountInput } from '@/shared/utils';
 import type { Budget } from '@/features/budgets';
 
 interface BudgetFormProps {
@@ -27,13 +25,15 @@ export function BudgetForm({
 
   const [name, setName] = useState(initialBudget?.name ?? '');
   const [amount, setAmount] = useState(
-    initialBudget ? String(initialBudget.amount) : '',
+    initialBudget
+      ? formatAmountInput(String(initialBudget.amount).replace('.', ','))
+      : '',
   );
   const [categoryIds, setCategoryIds] = useState<string[]>(
     initialBudget?.categoryIds ?? [],
   );
 
-  const numericAmount = Number(amount);
+  const numericAmount = parseAmountInput(amount) ?? 0;
   const isValid = isGeneral
     ? numericAmount > 0
     : name.trim() !== '' && numericAmount > 0 && categoryIds.length > 0;
@@ -67,9 +67,14 @@ export function BudgetForm({
       {mode === 'edit' && (
         <div className="grid grid-cols-2 gap-2 pt-1 sm:flex sm:justify-end">
           {!isGeneral && onDelete && (
-            <ConfirmDeleteButton onConfirm={onDelete} />
+            <ConfirmActionButton
+              variant="delete"
+              onConfirm={onDelete}
+              confirmVia="modal"
+            />
           )}
-          <ConfirmEditButton
+          <ConfirmActionButton
+            variant="edit"
             onConfirm={handleEnableFields}
             className={isGeneral ? 'col-span-2' : ''}
           />
@@ -77,36 +82,23 @@ export function BudgetForm({
       )}
 
       {!isGeneral && (
-        <div className="flex items-center gap-2 rounded-lg border border-neutral-200 px-3 py-2.5">
-          <PencilSimpleIcon
-            size={18}
-            className="shrink-0 text-neutral-400 dark:text-mauve-400"
-          />
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={mode === 'edit' ? !enableFields : false}
-            placeholder="Nombre del presupuesto"
-            aria-label="Nombre del presupuesto"
-            className="w-full text-sm text-neutral-900 dark:text-mauve-50 outline-none placeholder:text-neutral-400"
-          />
-        </div>
+        <Input
+          value={name}
+          onChange={(value) => setName(value)}
+          ariaLabel="Nombre del presupuesto"
+          placeholder="Nombre del presupuesto"
+          icon={PencilSimpleIcon}
+          disabled={mode === 'edit' ? !enableFields : false}
+        />
       )}
 
-      <div className="flex items-center gap-2 rounded-lg border border-neutral-200 px-3 py-2.5">
-        <span className="text-sm text-neutral-400">$</span>
-        <input
-          type="number"
-          inputMode="decimal"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          disabled={mode === 'edit' ? !enableFields : false}
-          placeholder="Monto límite"
-          aria-label="Monto límite del presupuesto"
-          className="w-full text-sm text-neutral-900 dark:text-mauve-50 outline-none placeholder:text-neutral-400"
-        />
-      </div>
+      <AmountInput
+        value={amount}
+        onChange={setAmount}
+        ariaLabel="Monto límite del presupuesto"
+        placeholder="Monto límite"
+        disabled={mode === 'edit' ? !enableFields : false}
+      />
 
       <div className="flex items-center justify-between rounded-lg border border-neutral-200 px-3 py-2.5 text-sm text-neutral-500">
         <span>Período</span>

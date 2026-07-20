@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PencilSimpleIcon } from '@phosphor-icons/react';
 import { Calculator } from './Calculator';
 import { CategoryPicker } from './CategoryPicker';
 import { getCategoryById } from '@/features/categories';
@@ -9,18 +10,13 @@ import {
   generateInstallments,
   formatPeriodLabel,
 } from '@/shared/utils';
-import {
-  CategoryIcon,
-  ConfirmDeleteButton,
-  ConfirmEditButton,
-  DateField,
-  DescriptionField,
-  PaymentMethodSelect,
-} from '@/shared/components';
+import { CategoryIcon, ConfirmActionButton, Input } from '@/shared/components';
 import type { Movement, NewMovementInput } from '@/features/movements';
 import { getCreditCardById } from '@/features/credit-cards';
 import { getPaymentMethodById } from '@/features/payment-methods';
 import { InstallmentsField } from './InstallmentsField';
+import { DateField } from './DateField';
+import { PaymentMethodSelect } from './PaymentMethodSelect';
 
 type Step = 'category' | 'amount';
 
@@ -180,8 +176,17 @@ export function MovementForm({
 
         {mode === 'edit' && (
           <div className="flex gap-2">
-            {onDelete && <ConfirmDeleteButton onConfirm={onDelete} />}
-            <ConfirmEditButton onConfirm={handleEnableFields} />
+            {onDelete && (
+              <ConfirmActionButton
+                variant="delete"
+                onConfirm={onDelete}
+                confirmVia="modal"
+              />
+            )}
+            <ConfirmActionButton
+              variant="edit"
+              onConfirm={handleEnableFields}
+            />
           </div>
         )}
       </div>
@@ -191,6 +196,7 @@ export function MovementForm({
         onChange={setDateValue}
         disabled={mode === 'edit' ? !enableFields : false}
       />
+
       {isExpenseCategory && (
         <PaymentMethodSelect
           value={paymentMethodId}
@@ -198,6 +204,7 @@ export function MovementForm({
           disabled={mode === 'edit' ? !enableFields : false}
         />
       )}
+
       {showInstallmentsField && (
         <InstallmentsField
           value={installmentsCount}
@@ -205,9 +212,13 @@ export function MovementForm({
           periodLabels={previewPeriods}
         />
       )}
-      <DescriptionField
+
+      <Input
         value={description}
         onChange={setDescription}
+        ariaLabel="Descripción del movimiento"
+        placeholder="Descripción (opcional)"
+        icon={PencilSimpleIcon}
         disabled={mode === 'edit' ? !enableFields : false}
       />
 

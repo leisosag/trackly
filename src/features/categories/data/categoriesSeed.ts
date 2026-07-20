@@ -80,12 +80,19 @@ export const categoriesSeed: Category[] = [
     colorScheme: 'essential',
   },
   {
-    id: 'personal',
-    name: 'Personales',
-    icon: 'User',
+    id: 'cats',
+    name: 'Gatos',
+    icon: 'PawPrint',
     type: 'expense',
     colorScheme: 'essential',
   },
+  // {
+  //   id: 'personal',
+  //   name: 'Personales',
+  //   icon: 'User',
+  //   type: 'expense',
+  //   colorScheme: 'essential',
+  // },
   {
     id: 'transport',
     name: 'Transporte',

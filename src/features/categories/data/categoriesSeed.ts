@@ -135,4 +135,11 @@ export const categoriesSeed: Category[] = [
     type: 'expense',
     colorScheme: 'special',
   },
+  {
+    id: 'extra',
+    name: 'Ajenos',
+    icon: 'CashRegister',
+    type: 'expense',
+    colorScheme: 'special',
+  },
 ];

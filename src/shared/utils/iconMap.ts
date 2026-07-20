@@ -21,6 +21,7 @@ import {
   BankIcon,
   CoinsIcon,
   CashRegisterIcon,
+  PawPrintIcon,
 } from '@phosphor-icons/react';
 
 const iconMap: Record<string, Icon> = {
@@ -43,6 +44,7 @@ const iconMap: Record<string, Icon> = {
   Bank: BankIcon,
   Coins: CoinsIcon,
   CashRegister: CashRegisterIcon,
+  PawPrint: PawPrintIcon,
 };
 
 export function getIcon(name: string): Icon {

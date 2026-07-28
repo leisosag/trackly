@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BalanceHeader } from './BalanceHeader';
 import type { Movement } from '../types';
+import userEvent from '@testing-library/user-event';
 
 const movements: Movement[] = [
   {
@@ -32,5 +33,27 @@ describe('BalanceHeader', () => {
     render(<BalanceHeader movements={[]} />);
 
     expect(screen.getByText('0')).toBeInTheDocument();
+  });
+
+  it('no muestra el botón de filtro si no se pasa onFilterClick', () => {
+    render(<BalanceHeader movements={movements} />);
+
+    expect(
+      screen.queryByRole('button', { name: /filtrar por categoría/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('muestra el botón de filtro y llama a onFilterClick al tocarlo', async () => {
+    const user = userEvent.setup();
+    const handleFilterClick = vi.fn();
+    render(
+      <BalanceHeader movements={movements} onFilterClick={handleFilterClick} />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+
+    expect(handleFilterClick).toHaveBeenCalledOnce();
   });
 });

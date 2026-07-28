@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { CategoryMultiSelect } from './CategoryMultiSelect';
 
 describe('CategoryMultiSelect', () => {
-  it('muestra solo categorías de tipo gasto', () => {
+  it('sin prop types, muestra solo categorías de tipo gasto (default retrocompatible)', () => {
     render(
       <CategoryMultiSelect selectedCategoryIds={[]} onToggle={() => {}} />,
     );
@@ -35,5 +35,31 @@ describe('CategoryMultiSelect', () => {
 
     const foodButton = screen.getByText('Comida').closest('button');
     expect(foodButton).toHaveAttribute('aria-checked', 'true');
+  });
+
+  it('con types=["income"], muestra solo categorías de ingreso', () => {
+    render(
+      <CategoryMultiSelect
+        selectedCategoryIds={[]}
+        onToggle={() => {}}
+        types={['income']}
+      />,
+    );
+
+    expect(screen.getByText('Salario')).toBeInTheDocument();
+    expect(screen.queryByText('Comida')).not.toBeInTheDocument();
+  });
+
+  it('con types=["income","expense"], muestra categorías de ambos tipos combinadas', () => {
+    render(
+      <CategoryMultiSelect
+        selectedCategoryIds={[]}
+        onToggle={() => {}}
+        types={['income', 'expense']}
+      />,
+    );
+
+    expect(screen.getByText('Salario')).toBeInTheDocument();
+    expect(screen.getByText('Comida')).toBeInTheDocument();
   });
 });

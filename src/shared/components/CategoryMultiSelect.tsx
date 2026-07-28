@@ -1,9 +1,14 @@
-import { categoriesSeed, type Category } from '@/features/categories';
-import { CategoryIcon } from '@/shared/components';
+import {
+  categoriesSeed,
+  type Category,
+  type CategoryType,
+} from '@/features/categories';
+import { CategoryIcon } from './CategoryIcon';
 
 interface CategoryMultiSelectProps {
   selectedCategoryIds: string[];
   onToggle: (categoryId: string) => void;
+  types?: CategoryType[];
   disabled?: boolean;
 }
 
@@ -42,13 +47,16 @@ function CategoryChip({
 export function CategoryMultiSelect({
   selectedCategoryIds,
   onToggle,
+  types = ['expense'],
   disabled = false,
 }: CategoryMultiSelectProps) {
-  const expenseCategories = categoriesSeed.filter((c) => c.type === 'expense');
+  const filteredCategories = categoriesSeed.filter((c) =>
+    types.includes(c.type),
+  );
 
   return (
     <div className="flex flex-wrap gap-2">
-      {expenseCategories.map((category) => (
+      {filteredCategories.map((category) => (
         <CategoryChip
           key={category.id}
           category={category}

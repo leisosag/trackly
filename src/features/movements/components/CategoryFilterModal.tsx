@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CategoryMultiSelect, Modal } from '@/shared/components';
 
 interface CategoryFilterModalProps {
@@ -15,6 +15,11 @@ export function CategoryFilterModal({
   onApply,
 }: CategoryFilterModalProps) {
   const [categoryIds, setCategoryIds] = useState<string[]>(initialCategoryIds);
+
+  useEffect(() => {
+    if (open) setCategoryIds(initialCategoryIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   function toggleCategory(categoryId: string) {
     setCategoryIds((prev) =>

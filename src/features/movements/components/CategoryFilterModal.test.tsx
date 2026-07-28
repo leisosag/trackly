@@ -67,6 +67,47 @@ describe('CategoryFilterModal', () => {
     expect(handleApply).toHaveBeenCalledWith(['salary', 'food']);
   });
 
+  it('resincroniza la selección con initialCategoryIds cada vez que se reabre', () => {
+    const { rerender } = render(
+      <CategoryFilterModal
+        open={true}
+        onOpenChange={() => {}}
+        initialCategoryIds={['food']}
+        onApply={() => {}}
+      />,
+    );
+
+    expect(screen.getByText('Comida').closest('button')).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+
+    // se cierra (sin desmontar) y se limpia el filtro externamente
+    rerender(
+      <CategoryFilterModal
+        open={false}
+        onOpenChange={() => {}}
+        initialCategoryIds={[]}
+        onApply={() => {}}
+      />,
+    );
+
+    // se reabre: debe reflejar el nuevo initialCategoryIds (vacío), no el viejo
+    rerender(
+      <CategoryFilterModal
+        open={true}
+        onOpenChange={() => {}}
+        initialCategoryIds={[]}
+        onApply={() => {}}
+      />,
+    );
+
+    expect(screen.getByText('Comida').closest('button')).toHaveAttribute(
+      'aria-checked',
+      'false',
+    );
+  });
+
   it('no llama a onOpenChange al confirmar (el cierre lo decide quien lo use)', async () => {
     const user = userEvent.setup();
     const handleOpenChange = vi.fn();

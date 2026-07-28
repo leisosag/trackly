@@ -30,7 +30,7 @@ src/
 │   │   ├── types.ts
 │   │   └── index.ts
 │   └── movement-form/            # Wizard de carga/edición de movimientos
-│       ├── components/           # MovementForm, Calculator, CategoryPicker
+│       ├── components/           # MovementForm, Calculator
 │       ├── utils/                 # evaluateExpression (parser de la calculadora)
 │       └── index.ts
 ├── shared/

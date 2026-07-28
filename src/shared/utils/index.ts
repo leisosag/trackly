@@ -27,3 +27,4 @@ export {
   type CardMovementGroup,
 } from './groupMovementsByCard';
 export { formatAmountInput, parseAmountInput } from './amountInput';
+export { filterMovementsByCategories } from './filterMovementsByCategories';

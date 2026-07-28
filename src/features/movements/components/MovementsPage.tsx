@@ -7,7 +7,13 @@ import type { Movement, NewMovementInput } from '../types';
 import { Fab, Modal } from '@/shared/components';
 import { MovementForm } from '@/features/movement-form';
 import { useSelectedMonth } from '@/shared/context';
-import { filterMovementsByPeriod } from '@/shared/utils';
+import {
+  filterMovementsByCategories,
+  filterMovementsByPeriod,
+} from '@/shared/utils';
+import { useMovementFilters } from '../hooks/useMovementFilters';
+import { FilteredSummary } from './FilteredSummary';
+import { CategoryFilterModal } from './CategoryFilterModal';
 
 type FormState = { mode: 'create' } | { mode: 'edit'; movement: Movement };
 
@@ -17,7 +23,21 @@ export function MovementsPage() {
 
   const { selectedDate } = useSelectedMonth();
 
+  const {
+    filters,
+    hasActiveFilters,
+    isModalOpen,
+    openModal,
+    closeModal,
+    applyFilters,
+    clearFilters,
+  } = useMovementFilters();
+
   const monthlyMovements = filterMovementsByPeriod(movements, selectedDate);
+
+  const displayedMovements = hasActiveFilters
+    ? filterMovementsByCategories(monthlyMovements, filters.categoryIds)
+    : monthlyMovements;
 
   const [formState, setFormState] = useState<FormState | null>(null);
 
@@ -42,11 +62,23 @@ export function MovementsPage() {
 
   return (
     <>
-      <BalanceHeader movements={monthlyMovements} />
+      <BalanceHeader
+        movements={monthlyMovements}
+        onFilterClick={openModal}
+        hasActiveFilters={hasActiveFilters}
+      />
+
+      {hasActiveFilters && (
+        <FilteredSummary
+          movements={displayedMovements}
+          categoryIds={filters.categoryIds}
+          onClear={clearFilters}
+        />
+      )}
 
       <main className="pb-24">
         <MovementList
-          movements={monthlyMovements}
+          movements={displayedMovements}
           onMovementClick={(movement) =>
             setFormState({ mode: 'edit', movement })
           }
@@ -80,6 +112,13 @@ export function MovementsPage() {
           />
         )}
       </Modal>
+
+      <CategoryFilterModal
+        open={isModalOpen}
+        onOpenChange={closeModal}
+        initialCategoryIds={filters.categoryIds}
+        onApply={applyFilters}
+      />
     </>
   );
 }

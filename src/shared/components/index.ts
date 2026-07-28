@@ -1,5 +1,6 @@
 export { BottomNav, type NavItem } from './BottomNav';
 export { CategoryIcon } from './CategoryIcon';
+export { CategoryMultiSelect } from './CategoryMultiSelect';
 export { ConfirmActionButton } from './ConfirmActionButton';
 export { ConfirmButton } from './ConfirmButton';
 export { Fab } from './Fab';

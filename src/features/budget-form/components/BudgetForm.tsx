@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { PencilSimpleIcon } from '@phosphor-icons/react';
-import { CategoryMultiSelect } from './CategoryMultiSelect';
 import { AmountInput } from './AmountInput';
-import { ConfirmActionButton, ConfirmButton, Input } from '@/shared/components';
+import {
+  CategoryMultiSelect,
+  ConfirmActionButton,
+  ConfirmButton,
+  Input,
+} from '@/shared/components';
 import { formatAmountInput, parseAmountInput } from '@/shared/utils';
 import type { Budget } from '@/features/budgets';
 

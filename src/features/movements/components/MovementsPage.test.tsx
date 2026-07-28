@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Toaster } from 'sonner';
 import { MovementsPage } from './MovementsPage';
@@ -169,5 +169,78 @@ describe('MovementsPage', () => {
     expect(
       screen.queryByRole('button', { name: /sí, eliminar/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it('abre el modal de filtro al tocar el ícono de filtrar', async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Filtrar por categoría' }),
+    ).toBeInTheDocument();
+  });
+
+  it('filtra el listado por la categoría elegida al confirmar', async () => {
+    const user = userEvent.setup();
+    seedMovements(); // food + salary, ver seed del archivo
+
+    renderPage();
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+    await user.click(screen.getByRole('checkbox', { name: 'Comida' }));
+    await user.click(screen.getByRole('button', { name: 'Filtrar' }));
+
+    // se acota al <main> (MovementList) para no chocar con el nombre de la
+    // categoría que también aparece en FilteredSummary
+    const list = within(screen.getByRole('main'));
+    expect(list.getByText('Comida')).toBeInTheDocument();
+    expect(list.queryByText('Salario')).not.toBeInTheDocument();
+  });
+
+  it('muestra FilteredSummary con el filtro activo y lo oculta al quitarlo', async () => {
+    const user = userEvent.setup();
+    seedMovements();
+
+    renderPage();
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+    await user.click(screen.getByRole('checkbox', { name: 'Comida' }));
+    await user.click(screen.getByRole('button', { name: 'Filtrar' }));
+
+    expect(
+      screen.getByRole('button', { name: /quitar filtro/i }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /quitar filtro/i }));
+
+    expect(
+      screen.queryByRole('button', { name: /quitar filtro/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('el saldo del BalanceHeader no se modifica al aplicar un filtro de categoría', async () => {
+    const user = userEvent.setup();
+    seedMovements();
+
+    renderPage();
+
+    const saldoAntes = screen.getByText('Saldo').nextSibling?.textContent;
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+    await user.click(screen.getByRole('checkbox', { name: 'Comida' }));
+    await user.click(screen.getByRole('button', { name: 'Filtrar' }));
+
+    const saldoDespues = screen.getByText('Saldo').nextSibling?.textContent;
+    expect(saldoDespues).toBe(saldoAntes);
   });
 });

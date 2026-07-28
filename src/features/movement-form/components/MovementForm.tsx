@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { PencilSimpleIcon } from '@phosphor-icons/react';
 import { Calculator } from './Calculator';
-import { CategoryPicker } from './CategoryPicker';
 import { getCategoryById } from '@/features/categories';
 import {
   getTodayInputValue,
@@ -10,7 +9,12 @@ import {
   generateInstallments,
   formatPeriodLabel,
 } from '@/shared/utils';
-import { CategoryIcon, ConfirmActionButton, Input } from '@/shared/components';
+import {
+  CategoryIcon,
+  CategoryMultiSelect,
+  ConfirmActionButton,
+  Input,
+} from '@/shared/components';
 import type { Movement, NewMovementInput } from '@/features/movements';
 import { getCreditCardById } from '@/features/credit-cards';
 import { getPaymentMethodById } from '@/features/payment-methods';
@@ -145,7 +149,9 @@ export function MovementForm({
 
   if (step === 'category') {
     return (
-      <CategoryPicker
+      <CategoryMultiSelect
+        mode="single"
+        types={['income', 'expense']}
         selectedCategoryId={selectedCategoryId}
         onSelect={handleCategorySelect}
       />

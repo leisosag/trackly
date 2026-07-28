@@ -28,3 +28,10 @@ export interface Movement {
 export type NewMovementInput = Omit<Movement, 'id'> & {
   installmentsCount?: number;
 };
+
+// Estado de los filtros aplicados sobre el listado de Movimientos.
+// Pensado para crecer: cada nueva dimensión de filtro (medio de pago, monto, búsqueda) se suma acá como campo opcional
+// con su propia función pura en shared/utils (ver filterMovementsByCategories), sin acoplar las distintas dimensiones entre sí.
+export interface MovementFilters {
+  categoryIds: string[];
+}

@@ -28,3 +28,6 @@ export {
 } from './groupMovementsByCard';
 export { formatAmountInput, parseAmountInput } from './amountInput';
 export { filterMovementsByCategories } from './filterMovementsByCategories';
+export { filterMovementsByPaymentMethods } from './filterMovementsByPaymentMethods';
+export { applyMovementFilters } from './applyMovementFilters';
+export { formatMovementFiltersDescription } from './formatMovementFiltersDescription';

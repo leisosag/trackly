@@ -25,7 +25,7 @@ describe('FilteredSummary', () => {
     render(
       <FilteredSummary
         movements={movements}
-        categoryIds={['food', 'salary']}
+        filters={{ categoryIds: ['food', 'salary'], paymentMethodIds: [] }}
         onClear={() => {}}
       />,
     );
@@ -33,11 +33,14 @@ describe('FilteredSummary', () => {
     expect(screen.getByText('Comida, Salario')).toBeInTheDocument();
   });
 
-  it('trunca la lista de nombres cuando hay más de 3 categorías', () => {
+  it('trunca la lista de nombres de categorías cuando hay más de 3', () => {
     render(
       <FilteredSummary
         movements={movements}
-        categoryIds={['food', 'salary', 'transport', 'home', 'health']}
+        filters={{
+          categoryIds: ['food', 'salary', 'transport', 'home', 'health'],
+          paymentMethodIds: [],
+        }}
         onClear={() => {}}
       />,
     );
@@ -47,11 +50,60 @@ describe('FilteredSummary', () => {
     ).toBeInTheDocument();
   });
 
+  it('muestra los nombres de los medios de pago filtrados en su propia línea', () => {
+    render(
+      <FilteredSummary
+        movements={movements}
+        filters={{ categoryIds: [], paymentMethodIds: ['debit'] }}
+        onClear={() => {}}
+      />,
+    );
+
+    expect(screen.getByText('Débito')).toBeInTheDocument();
+  });
+
+  it('no muestra la línea de categorías si no hay categorías en el filtro', () => {
+    render(
+      <FilteredSummary
+        movements={movements}
+        filters={{ categoryIds: [], paymentMethodIds: ['debit'] }}
+        onClear={() => {}}
+      />,
+    );
+
+    expect(screen.queryByText('Comida')).not.toBeInTheDocument();
+  });
+
+  it('no muestra la línea de medios de pago si no hay medios de pago en el filtro', () => {
+    render(
+      <FilteredSummary
+        movements={movements}
+        filters={{ categoryIds: ['food'], paymentMethodIds: [] }}
+        onClear={() => {}}
+      />,
+    );
+
+    expect(screen.queryByText('Débito')).not.toBeInTheDocument();
+  });
+
+  it('muestra ambas líneas cuando el filtro combina categorías y medios de pago', () => {
+    render(
+      <FilteredSummary
+        movements={movements}
+        filters={{ categoryIds: ['food'], paymentMethodIds: ['debit'] }}
+        onClear={() => {}}
+      />,
+    );
+
+    expect(screen.getByText('Comida')).toBeInTheDocument();
+    expect(screen.getByText('Débito')).toBeInTheDocument();
+  });
+
   it('muestra ingreso, gasto y balance calculados sobre los movimientos filtrados', () => {
     render(
       <FilteredSummary
         movements={movements}
-        categoryIds={['food', 'salary']}
+        filters={{ categoryIds: ['food', 'salary'], paymentMethodIds: [] }}
         onClear={() => {}}
       />,
     );
@@ -67,7 +119,7 @@ describe('FilteredSummary', () => {
     render(
       <FilteredSummary
         movements={movements}
-        categoryIds={['food']}
+        filters={{ categoryIds: ['food'], paymentMethodIds: [] }}
         onClear={handleClear}
       />,
     );
@@ -81,7 +133,7 @@ describe('FilteredSummary', () => {
     render(
       <FilteredSummary
         movements={[]}
-        categoryIds={['food']}
+        filters={{ categoryIds: ['food'], paymentMethodIds: [] }}
         onClear={() => {}}
       />,
     );

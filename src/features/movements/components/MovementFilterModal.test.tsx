@@ -1,15 +1,16 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { CategoryFilterModal } from './CategoryFilterModal';
+import { MovementFilterModal } from './MovementFilterModal';
 
-describe('CategoryFilterModal', () => {
+describe('MovementFilterModal', () => {
   it('muestra categorías de ingreso y de gasto combinadas', () => {
     render(
-      <CategoryFilterModal
+      <MovementFilterModal
         open={true}
         onOpenChange={() => {}}
         initialCategoryIds={[]}
+        initialPaymentMethodIds={[]}
         onApply={() => {}}
       />,
     );
@@ -20,10 +21,11 @@ describe('CategoryFilterModal', () => {
 
   it('arranca con las categorías indicadas ya seleccionadas', () => {
     render(
-      <CategoryFilterModal
+      <MovementFilterModal
         open={true}
         onOpenChange={() => {}}
         initialCategoryIds={['food']}
+        initialPaymentMethodIds={[]}
         onApply={() => {}}
       />,
     );
@@ -35,44 +37,79 @@ describe('CategoryFilterModal', () => {
   it('permite tildar una categoría antes de confirmar', async () => {
     const user = userEvent.setup();
     render(
-      <CategoryFilterModal
+      <MovementFilterModal
         open={true}
         onOpenChange={() => {}}
         initialCategoryIds={[]}
+        initialPaymentMethodIds={[]}
         onApply={() => {}}
       />,
     );
 
-    await user.click(screen.getByText('Comida'));
+    await user.click(screen.getByRole('checkbox', { name: 'Comida' }));
 
     const foodButton = screen.getByText('Comida').closest('button');
     expect(foodButton).toHaveAttribute('aria-checked', 'true');
   });
 
-  it('llama a onApply con los ids seleccionados al tocar "Filtrar"', async () => {
+  it('muestra los medios de pago disponibles bajo su propia sección', () => {
+    render(
+      <MovementFilterModal
+        open={true}
+        onOpenChange={() => {}}
+        initialCategoryIds={[]}
+        initialPaymentMethodIds={[]}
+        onApply={() => {}}
+      />,
+    );
+
+    expect(screen.getByText('Medio de pago')).toBeInTheDocument();
+    expect(screen.getByText('Efectivo')).toBeInTheDocument();
+    expect(screen.getByText('Tarjeta principal')).toBeInTheDocument();
+  });
+
+  it('arranca con los medios de pago indicados ya seleccionados', () => {
+    render(
+      <MovementFilterModal
+        open={true}
+        onOpenChange={() => {}}
+        initialCategoryIds={[]}
+        initialPaymentMethodIds={['debit']}
+        onApply={() => {}}
+      />,
+    );
+
+    const debitChip = screen.getByText('Débito').closest('button');
+    expect(debitChip).toHaveAttribute('aria-checked', 'true');
+  });
+
+  it('llama a onApply con las categorías y medios de pago seleccionados al tocar "Filtrar"', async () => {
     const user = userEvent.setup();
     const handleApply = vi.fn();
     render(
-      <CategoryFilterModal
+      <MovementFilterModal
         open={true}
         onOpenChange={() => {}}
         initialCategoryIds={['salary']}
+        initialPaymentMethodIds={[]}
         onApply={handleApply}
       />,
     );
 
-    await user.click(screen.getByText('Comida'));
+    await user.click(screen.getByRole('checkbox', { name: 'Comida' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Débito' }));
     await user.click(screen.getByRole('button', { name: 'Filtrar' }));
 
-    expect(handleApply).toHaveBeenCalledWith(['salary', 'food']);
+    expect(handleApply).toHaveBeenCalledWith(['salary', 'food'], ['debit']);
   });
 
-  it('resincroniza la selección con initialCategoryIds cada vez que se reabre', () => {
+  it('resincroniza ambas selecciones con los valores iniciales cada vez que se reabre', () => {
     const { rerender } = render(
-      <CategoryFilterModal
+      <MovementFilterModal
         open={true}
         onOpenChange={() => {}}
         initialCategoryIds={['food']}
+        initialPaymentMethodIds={['debit']}
         onApply={() => {}}
       />,
     );
@@ -81,28 +118,38 @@ describe('CategoryFilterModal', () => {
       'aria-checked',
       'true',
     );
+    expect(screen.getByText('Débito').closest('button')).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
 
     // se cierra (sin desmontar) y se limpia el filtro externamente
     rerender(
-      <CategoryFilterModal
+      <MovementFilterModal
         open={false}
         onOpenChange={() => {}}
         initialCategoryIds={[]}
+        initialPaymentMethodIds={[]}
         onApply={() => {}}
       />,
     );
 
-    // se reabre: debe reflejar el nuevo initialCategoryIds (vacío), no el viejo
+    // se reabre: debe reflejar los nuevos valores iniciales (vacíos)
     rerender(
-      <CategoryFilterModal
+      <MovementFilterModal
         open={true}
         onOpenChange={() => {}}
         initialCategoryIds={[]}
+        initialPaymentMethodIds={[]}
         onApply={() => {}}
       />,
     );
 
     expect(screen.getByText('Comida').closest('button')).toHaveAttribute(
+      'aria-checked',
+      'false',
+    );
+    expect(screen.getByText('Débito').closest('button')).toHaveAttribute(
       'aria-checked',
       'false',
     );
@@ -112,10 +159,11 @@ describe('CategoryFilterModal', () => {
     const user = userEvent.setup();
     const handleOpenChange = vi.fn();
     render(
-      <CategoryFilterModal
+      <MovementFilterModal
         open={true}
         onOpenChange={handleOpenChange}
         initialCategoryIds={[]}
+        initialPaymentMethodIds={[]}
         onApply={() => {}}
       />,
     );

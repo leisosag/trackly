@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import type { MovementFilters } from '../types';
 
-const EMPTY_FILTERS: MovementFilters = { categoryIds: [] };
+const EMPTY_FILTERS: MovementFilters = {
+  categoryIds: [],
+  paymentMethodIds: [],
+};
 
 export function useMovementFilters() {
   const [filters, setFilters] = useState<MovementFilters>(EMPTY_FILTERS);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const hasActiveFilters = filters.categoryIds.length > 0;
+  const hasActiveFilters =
+    filters.categoryIds.length > 0 || filters.paymentMethodIds.length > 0;
 
   function openModal() {
     setIsModalOpen(true);
@@ -18,8 +22,8 @@ export function useMovementFilters() {
   }
 
   // Confirma el filtro elegido en el modal (botón "Filtrar") y lo cierra.
-  function applyFilters(categoryIds: string[]) {
-    setFilters({ categoryIds });
+  function applyFilters(categoryIds: string[], paymentMethodIds: string[]) {
+    setFilters({ categoryIds, paymentMethodIds });
     setIsModalOpen(false);
   }
 

@@ -7,6 +7,7 @@ describe('useMovementFilters', () => {
     const { result } = renderHook(() => useMovementFilters());
 
     expect(result.current.filters.categoryIds).toEqual([]);
+    expect(result.current.filters.paymentMethodIds).toEqual([]);
     expect(result.current.hasActiveFilters).toBe(false);
     expect(result.current.isModalOpen).toBe(false);
   });
@@ -22,40 +23,50 @@ describe('useMovementFilters', () => {
     expect(result.current.filters.categoryIds).toEqual([]);
   });
 
-  it('applyFilters aplica las categorías elegidas y cierra el modal', () => {
+  it('applyFilters aplica categorías y medios de pago, y cierra el modal', () => {
     const { result } = renderHook(() => useMovementFilters());
 
     act(() => result.current.openModal());
-    act(() => result.current.applyFilters(['food', 'salary']));
+    act(() => result.current.applyFilters(['food', 'salary'], ['debit']));
 
     expect(result.current.filters.categoryIds).toEqual(['food', 'salary']);
+    expect(result.current.filters.paymentMethodIds).toEqual(['debit']);
     expect(result.current.isModalOpen).toBe(false);
   });
 
-  it('hasActiveFilters es true una vez aplicado un filtro con categorías', () => {
+  it('hasActiveFilters es true si hay categorías, aunque no haya medios de pago', () => {
     const { result } = renderHook(() => useMovementFilters());
 
-    act(() => result.current.applyFilters(['food']));
+    act(() => result.current.applyFilters(['food'], []));
 
     expect(result.current.hasActiveFilters).toBe(true);
   });
 
-  it('applyFilters con un array vacío deja hasActiveFilters en false', () => {
+  it('hasActiveFilters es true si hay medios de pago, aunque no haya categorías', () => {
     const { result } = renderHook(() => useMovementFilters());
 
-    act(() => result.current.applyFilters(['food']));
-    act(() => result.current.applyFilters([]));
+    act(() => result.current.applyFilters([], ['debit']));
+
+    expect(result.current.hasActiveFilters).toBe(true);
+  });
+
+  it('applyFilters con ambos arrays vacíos deja hasActiveFilters en false', () => {
+    const { result } = renderHook(() => useMovementFilters());
+
+    act(() => result.current.applyFilters(['food'], ['debit']));
+    act(() => result.current.applyFilters([], []));
 
     expect(result.current.hasActiveFilters).toBe(false);
   });
 
-  it('clearFilters vuelve al estado inicial sin categorías', () => {
+  it('clearFilters vuelve al estado inicial sin categorías ni medios de pago', () => {
     const { result } = renderHook(() => useMovementFilters());
 
-    act(() => result.current.applyFilters(['food', 'transport']));
+    act(() => result.current.applyFilters(['food', 'transport'], ['debit']));
     act(() => result.current.clearFilters());
 
     expect(result.current.filters.categoryIds).toEqual([]);
+    expect(result.current.filters.paymentMethodIds).toEqual([]);
     expect(result.current.hasActiveFilters).toBe(false);
   });
 });

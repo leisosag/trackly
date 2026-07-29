@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useMovements } from '../hooks/useMovements';
+import { useMovementFilters } from '../hooks/useMovementFilters';
 import { BalanceHeader } from './BalanceHeader';
 import { MovementList } from './MovementList';
+import { FilteredSummary } from './FilteredSummary';
+import { MovementFilterModal } from './MovementFilterModal';
 import type { Movement, NewMovementInput } from '../types';
 import { Fab, Modal } from '@/shared/components';
 import { MovementForm } from '@/features/movement-form';
 import { useSelectedMonth } from '@/shared/context';
-import {
-  filterMovementsByCategories,
-  filterMovementsByPeriod,
-} from '@/shared/utils';
-import { useMovementFilters } from '../hooks/useMovementFilters';
-import { FilteredSummary } from './FilteredSummary';
-import { CategoryFilterModal } from './CategoryFilterModal';
+import { filterMovementsByPeriod, applyMovementFilters } from '@/shared/utils';
 
 type FormState = { mode: 'create' } | { mode: 'edit'; movement: Movement };
 
@@ -36,7 +33,7 @@ export function MovementsPage() {
   const monthlyMovements = filterMovementsByPeriod(movements, selectedDate);
 
   const displayedMovements = hasActiveFilters
-    ? filterMovementsByCategories(monthlyMovements, filters.categoryIds)
+    ? applyMovementFilters(monthlyMovements, filters)
     : monthlyMovements;
 
   const [formState, setFormState] = useState<FormState | null>(null);
@@ -71,7 +68,7 @@ export function MovementsPage() {
       {hasActiveFilters && (
         <FilteredSummary
           movements={displayedMovements}
-          categoryIds={filters.categoryIds}
+          filters={filters}
           onClear={clearFilters}
         />
       )}
@@ -113,10 +110,11 @@ export function MovementsPage() {
         )}
       </Modal>
 
-      <CategoryFilterModal
+      <MovementFilterModal
         open={isModalOpen}
         onOpenChange={closeModal}
         initialCategoryIds={filters.categoryIds}
+        initialPaymentMethodIds={filters.paymentMethodIds}
         onApply={applyFilters}
       />
     </>

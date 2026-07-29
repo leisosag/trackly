@@ -180,7 +180,7 @@ describe('MovementsPage', () => {
     );
 
     expect(
-      screen.getByRole('heading', { name: 'Filtrar por categoría' }),
+      screen.getByRole('heading', { name: 'Filtrar movimientos' }),
     ).toBeInTheDocument();
   });
 
@@ -242,5 +242,54 @@ describe('MovementsPage', () => {
 
     const saldoDespues = screen.getByText('Saldo').nextSibling?.textContent;
     expect(saldoDespues).toBe(saldoAntes);
+  });
+
+  it('filtra por medio de pago independientemente de la categoría', async () => {
+    const user = userEvent.setup();
+    seedMovements();
+
+    renderPage();
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+    await user.click(screen.getByRole('checkbox', { name: 'Débito' }));
+    await user.click(screen.getByRole('button', { name: 'Filtrar' }));
+
+    const list = within(screen.getByRole('main'));
+    expect(list.getByText('Comida')).toBeInTheDocument();
+    expect(list.queryByText('Salario')).not.toBeInTheDocument();
+  });
+
+  it('combina categoría y medio de pago para filtrar más en detalle (intersección)', async () => {
+    const user = userEvent.setup();
+    seedMovements();
+
+    renderPage();
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+    await user.click(screen.getByRole('checkbox', { name: 'Comida' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Débito' }));
+    await user.click(screen.getByRole('button', { name: 'Filtrar' }));
+
+    const list = within(screen.getByRole('main'));
+    expect(list.getByText('Comida')).toBeInTheDocument();
+  });
+
+  it('FilteredSummary muestra el medio de pago activo en su propia línea', async () => {
+    const user = userEvent.setup();
+    seedMovements();
+
+    renderPage();
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+    await user.click(screen.getByRole('checkbox', { name: 'Débito' }));
+    await user.click(screen.getByRole('button', { name: 'Filtrar' }));
+
+    expect(screen.getByText('Débito')).toBeInTheDocument();
   });
 });

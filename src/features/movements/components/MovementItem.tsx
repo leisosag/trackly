@@ -28,7 +28,7 @@ export function MovementItem({ movement, onClick }: MovementItemProps) {
       onClick={() => onClick?.(movement)}
       className="flex w-full items-center gap-3 px-2 py-3 text-left bg-neutral-50 hover:bg-neutral-100 dark:bg-mauve-800 dark:hover:bg-mauve-800/80 hover:cursor-pointer"
     >
-      {category && <CategoryIcon category={category} />}
+      {category && <CategoryIcon category={category} iconSize={20} />}
 
       <div className="flex-1 flex flex-col min-w-0 gap-1">
         <p className="flex items-end gap-2 font-medium text-neutral-900 dark:text-mauve-50">
@@ -54,7 +54,7 @@ export function MovementItem({ movement, onClick }: MovementItemProps) {
 
       <span
         className={cn(
-          'font-semibold dark:text-mauve-50',
+          'text-lg font-semibold dark:text-mauve-50',
           isIncome ? 'dark:text-emerald-400' : 'dark:text-rose-400',
         )}
       >

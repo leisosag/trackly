@@ -29,7 +29,7 @@ export function CategoryIcon({
       className={cn(
         'flex items-center justify-center',
         isCircle
-          ? 'rounded-full p-2'
+          ? 'rounded-full p-2.5'
           : 'flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-medium transition-colors',
         !disabled && 'hover:cursor-pointer',
         borderOnHover && `border-1 ${colors.border}`,

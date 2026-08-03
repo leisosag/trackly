@@ -18,8 +18,8 @@ export function generateInstallments(
   base: BaseMovementInput,
   installmentsCount: number,
   closingDay: number,
+  groupId: string = crypto.randomUUID(),
 ): Omit<Movement, 'id'>[] {
-  const groupId = crypto.randomUUID();
   const firstPeriod = getStatementPeriod(new Date(base.date), closingDay);
 
   return Array.from({ length: installmentsCount }, (_, i) => ({

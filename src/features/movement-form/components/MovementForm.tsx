@@ -29,6 +29,8 @@ interface MovementFormProps {
   initialMovement?: Movement;
   onSubmit: (movement: NewMovementInput) => void;
   onDelete?: () => void;
+  lockPaymentMethod?: boolean;
+  deleteConfirmMessage?: string;
 }
 
 export function MovementForm({
@@ -36,6 +38,8 @@ export function MovementForm({
   initialMovement,
   onSubmit,
   onDelete,
+  lockPaymentMethod = false,
+  deleteConfirmMessage,
 }: MovementFormProps) {
   const [step, setStep] = useState<Step>(
     initialMovement ? 'amount' : 'category',
@@ -187,6 +191,7 @@ export function MovementForm({
                 variant="delete"
                 onConfirm={onDelete}
                 confirmVia="modal"
+                confirmMessage={deleteConfirmMessage}
               />
             )}
             <ConfirmActionButton
@@ -204,11 +209,20 @@ export function MovementForm({
       />
 
       {isExpenseCategory && (
-        <PaymentMethodSelect
-          value={paymentMethodId}
-          onChange={setPaymentMethodId}
-          disabled={mode === 'edit' ? !enableFields : false}
-        />
+        <>
+          <PaymentMethodSelect
+            value={paymentMethodId}
+            onChange={setPaymentMethodId}
+            disabled={
+              (mode === 'edit' ? !enableFields : false) || lockPaymentMethod
+            }
+          />
+          {lockPaymentMethod && (
+            <p className="px-1 text-xs text-neutral-400 dark:text-mauve-500">
+              El medio de pago no se puede modificar en una compra en cuotas.
+            </p>
+          )}
+        </>
       )}
 
       {showInstallmentsField && (

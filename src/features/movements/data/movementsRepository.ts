@@ -54,4 +54,10 @@ export const movementsRepository = {
     const all = readAll();
     writeAll(all.filter((m) => m.id !== id));
   },
+
+  removeMany(ids: string[]): void {
+    const all = readAll();
+    const idSet = new Set(ids);
+    writeAll(all.filter((m) => !idSet.has(m.id)));
+  },
 };

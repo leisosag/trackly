@@ -77,4 +77,18 @@ describe('generateInstallments', () => {
       '2026-10',
     ]);
   });
+
+  it('reutiliza el groupId provisto en vez de generar uno nuevo (caso: edición de una compra existente)', () => {
+    const result = generateInstallments(base, 3, 15, 'grupo-existente');
+
+    expect(
+      result.every((m) => m.installment?.groupId === 'grupo-existente'),
+    ).toBe(true);
+  });
+
+  it('sin groupId explícito, genera uno nuevo por compra', () => {
+    const result = generateInstallments(base, 2, 15);
+
+    expect(result[0].installment?.groupId).toBeDefined();
+  });
 });

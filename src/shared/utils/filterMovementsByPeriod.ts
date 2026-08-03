@@ -1,5 +1,6 @@
 import type { Movement } from '@/features/movements';
 import { getPeriodRange } from './getPeriodRange';
+import { excludeCreditCardMovements } from './excludeCreditCardMovements';
 
 export function filterMovementsByPeriod(
   movements: Movement[],
@@ -7,7 +8,7 @@ export function filterMovementsByPeriod(
 ): Movement[] {
   const { start, end } = getPeriodRange('monthly', referenceDate);
 
-  return movements.filter((movement) => {
+  return excludeCreditCardMovements(movements).filter((movement) => {
     const date = new Date(movement.date);
     return date >= start && date <= end;
   });

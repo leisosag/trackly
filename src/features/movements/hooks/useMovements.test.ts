@@ -23,7 +23,7 @@ describe('useMovements', () => {
     seedDefaultCard();
   });
 
-  it('al cargar una compra en cuotas con tarjeta de crédito, cada cuota queda fechada en el mes de su resumen', () => {
+  it('al cargar una compra en cuotas con tarjeta de crédito, cada cuota conserva la fecha real de compra y solo varía su statementPeriod', () => {
     const { result } = renderHook(() => useMovements());
 
     act(() => {
@@ -37,12 +37,16 @@ describe('useMovements', () => {
     });
 
     expect(result.current.movements).toHaveLength(3);
+    expect(
+      result.current.movements.every(
+        (m) => m.date === '2026-07-05T10:00:00.000Z',
+      ),
+    ).toBe(true);
 
-    const months = result.current.movements
-      .map((m) => new Date(m.date).getMonth())
-      .sort((a, b) => a - b);
-
-    expect(months).toEqual([6, 7, 8]); // julio, agosto, septiembre
+    const periods = result.current.movements
+      .map((m) => m.statementPeriod)
+      .sort();
+    expect(periods).toEqual(['2026-07', '2026-08', '2026-09']);
   });
 
   it('un movimiento sin medio de pago crédito conserva la fecha original tal cual fue cargada', () => {

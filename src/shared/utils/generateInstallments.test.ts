@@ -60,56 +60,21 @@ describe('generateInstallments', () => {
     expect(result[0].statementPeriod).toBe('2026-08');
   });
 
-  it('ajusta la fecha de cada cuota al mes de su statementPeriod, conservando el día y la hora', () => {
+  it('conserva la fecha real de la compra en todas las cuotas, sin correrla al mes de facturación', () => {
     const result = generateInstallments(base, 3, 15);
 
-    expect(new Date(result[0].date).getMonth()).toBe(6); // julio
-    expect(new Date(result[1].date).getMonth()).toBe(7); // agosto
-    expect(new Date(result[2].date).getMonth()).toBe(8); // septiembre
-
-    result.forEach((m) => {
-      expect(new Date(m.date).getDate()).toBe(new Date(base.date).getDate());
-      expect(new Date(m.date).getHours()).toBe(new Date(base.date).getHours());
-    });
+    expect(result.every((m) => m.date === base.date)).toBe(true);
   });
 
-  it('ajusta el día si el mes de destino tiene menos días (ej: 31 de enero -> febrero)', () => {
-    // con cierre el día 15, una compra el 31/01 (después del cierre) ya
-    // entra en el resumen de febrero desde la primera cuota
-    const jan31Base = { ...base, date: '2026-01-31T10:00:00.000Z' };
-    const result = generateInstallments(jan31Base, 2, 15);
-
-    expect(new Date(result[0].date).getMonth()).toBe(1); // febrero
-    expect(new Date(result[0].date).getDate()).toBeLessThanOrEqual(28);
-
-    // marzo sí tiene 31 días, así que la segunda cuota no necesita clamp
-    expect(new Date(result[1].date).getMonth()).toBe(2); // marzo
-    expect(new Date(result[1].date).getDate()).toBe(31);
-  });
-
-  it('con 1 sola cuota comprada después del cierre, la fecha se corre al mes en que se factura', () => {
-    // cierre el 15, compra el 26/06 (después del cierre) -> se paga en julio
-    const lateBase = { ...base, date: '2026-06-26T10:00:00.000Z' };
-    const result = generateInstallments(lateBase, 1, 15);
-
-    expect(new Date(result[0].date).getMonth()).toBe(6); // julio
-    expect(result[0].statementPeriod).toBe('2026-07');
-  });
-
-  it('con 1 sola cuota comprada antes del cierre, la fecha no se corre de mes', () => {
-    // cierre el 15, compra el 05/07 (antes del cierre) -> se paga ese mismo mes
-    const result = generateInstallments(base, 1, 15);
-
-    expect(new Date(result[0].date).getMonth()).toBe(6); // julio, sin corrimiento
-    expect(result[0].statementPeriod).toBe('2026-07');
-  });
-
-  it('con varias cuotas compradas después del cierre, todas las fechas se corren un mes, incluida la primera', () => {
-    const lateBase = { ...base, date: '2026-06-26T10:00:00.000Z' };
+  it('conserva la fecha real de compra incluso cuando la primera cuota se factura al mes siguiente (compra después del cierre)', () => {
+    const lateBase = { ...base, date: '2026-07-22T10:00:00.000Z' };
     const result = generateInstallments(lateBase, 3, 15);
 
-    expect(new Date(result[0].date).getMonth()).toBe(6); // julio
-    expect(new Date(result[1].date).getMonth()).toBe(7); // agosto
-    expect(new Date(result[2].date).getMonth()).toBe(8); // septiembre
+    expect(result.every((m) => m.date === lateBase.date)).toBe(true);
+    expect(result.map((m) => m.statementPeriod)).toEqual([
+      '2026-08',
+      '2026-09',
+      '2026-10',
+    ]);
   });
 });

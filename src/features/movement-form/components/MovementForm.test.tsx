@@ -437,4 +437,55 @@ describe('MovementForm', () => {
       }),
     );
   });
+
+  it('con lockPaymentMethod, deshabilita el medio de pago incluso con enableFields activo', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MovementForm
+        mode="edit"
+        initialMovement={{
+          id: '1',
+          categoryId: 'shopping',
+          amount: 100,
+          date: '2026-08-05T10:00:00.000Z',
+          paymentMethodId: 'default-card',
+          statementPeriod: '2026-08',
+          installment: { groupId: 'g1', number: 1, total: 3 },
+        }}
+        onSubmit={() => {}}
+        lockPaymentMethod
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /editar/i }));
+
+    expect(screen.getByLabelText(/medio de pago/i)).toBeDisabled();
+  });
+
+  it('con deleteConfirmMessage, lo muestra en el modal de confirmación de borrado', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MovementForm
+        mode="edit"
+        initialMovement={{
+          id: '1',
+          categoryId: 'shopping',
+          amount: 100,
+          date: '2026-08-05T10:00:00.000Z',
+          paymentMethodId: 'default-card',
+        }}
+        onSubmit={() => {}}
+        onDelete={() => {}}
+        deleteConfirmMessage="Se van a eliminar las 3 cuotas de esta compra."
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /eliminar/i }));
+
+    expect(
+      screen.getByText('Se van a eliminar las 3 cuotas de esta compra.'),
+    ).toBeInTheDocument();
+  });
 });

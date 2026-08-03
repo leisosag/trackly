@@ -19,16 +19,22 @@ import { Modal } from '@/shared/components';
 import { CreditCardForm } from './CreditCardForm';
 import { CreditCardList } from './CreditCardList';
 import { toast } from 'sonner';
+import type { Movement, NewMovementInput } from '@/features/movements';
+import { MovementForm } from '@/features/movement-form';
 
 type FormState = { mode: 'create' } | { mode: 'edit'; card: CreditCard };
 
 export function CreditCardsPage() {
-  const { movements } = useMovements();
+  const { movements, updateInstallmentGroup, removeInstallmentGroup } =
+    useMovements();
   const { selectedDate } = useSelectedMonth();
   const { creditCards, addCreditCard, updateCreditCard } = useCreditCards();
 
   const [manageOpen, setManageOpen] = useState(false);
   const [formState, setFormState] = useState<FormState | null>(null);
+  const [movementFormState, setMovementFormState] = useState<{
+    movement: Movement;
+  } | null>(null);
 
   const period = dateToPeriod(selectedDate);
   const cardMovements = getCreditCardMovements(movements, period);
@@ -82,6 +88,34 @@ export function CreditCardsPage() {
     setFormState(null);
   }
 
+  function handleMovementClick(movement: Movement) {
+    if (movement.installment && movement.installment.number !== 1) {
+      toast.info(
+        'Esta cuota forma parte de una compra. Para editarla o eliminarla, tocá la cuota 1.',
+      );
+      return;
+    }
+    setMovementFormState({ movement });
+  }
+
+  function handleInstallmentUpdate(groupId: string, input: NewMovementInput) {
+    updateInstallmentGroup(groupId, {
+      categoryId: input.categoryId,
+      description: input.description,
+      amount: input.amount,
+      date: input.date,
+      paymentMethodId: input.paymentMethodId!,
+    });
+    setMovementFormState(null);
+    toast.success('Compra actualizada');
+  }
+
+  function handleInstallmentDelete(groupId: string) {
+    removeInstallmentGroup(groupId);
+    setMovementFormState(null);
+    toast.success('Compra eliminada');
+  }
+
   return (
     <>
       <header className="sticky top-0 z-2 bg-neutral-900 dark:bg-mauve-800 py-4 px-6 text-white">
@@ -124,7 +158,10 @@ export function CreditCardsPage() {
                     {formatCurrency(cardTotal)}
                   </span>
                 </div>
-                <MovementList movements={groupMovements} />
+                <MovementList
+                  movements={groupMovements}
+                  onMovementClick={handleMovementClick}
+                />
               </div>
             ),
           )
@@ -176,6 +213,34 @@ export function CreditCardsPage() {
             )}
           />
         )}
+      </Modal>
+
+      <Modal
+        open={movementFormState !== null}
+        onOpenChange={(open) => !open && setMovementFormState(null)}
+        title="Editar compra"
+      >
+        {movementFormState &&
+          (() => {
+            const total = movementFormState.movement.installment?.total ?? 1;
+            const groupId = movementFormState.movement.installment!.groupId;
+            const confirmMessage =
+              total === 1
+                ? 'Se va a eliminar esta compra.'
+                : `Se van a eliminar las ${total} cuotas de esta compra.`;
+
+            return (
+              <MovementForm
+                key={`edit-installment-${groupId}`}
+                mode="edit"
+                initialMovement={movementFormState.movement}
+                lockPaymentMethod
+                deleteConfirmMessage={confirmMessage}
+                onSubmit={(input) => handleInstallmentUpdate(groupId, input)}
+                onDelete={() => handleInstallmentDelete(groupId)}
+              />
+            );
+          })()}
       </Modal>
     </>
   );

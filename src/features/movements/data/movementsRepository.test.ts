@@ -117,4 +117,39 @@ describe('movementsRepository', () => {
     expect(() => movementsRepository.remove('id-fantasma')).not.toThrow();
     expect(movementsRepository.getAll()).toHaveLength(1);
   });
+
+  it('elimina varios movimientos por id de una sola vez', () => {
+    const a = movementsRepository.create({
+      categoryId: 'food',
+      amount: 100,
+      date: '2026-07-01T10:00:00.000Z',
+    });
+    const b = movementsRepository.create({
+      categoryId: 'food',
+      amount: 200,
+      date: '2026-07-02T10:00:00.000Z',
+    });
+    movementsRepository.create({
+      categoryId: 'salary',
+      amount: 5000,
+      date: '2026-07-01T10:00:00.000Z',
+    });
+
+    movementsRepository.removeMany([a.id, b.id]);
+
+    expect(movementsRepository.getAll()).toHaveLength(1);
+  });
+
+  it('removeMany no rompe si algún id no existe', () => {
+    const created = movementsRepository.create({
+      categoryId: 'food',
+      amount: 100,
+      date: '2026-07-01',
+    });
+
+    expect(() =>
+      movementsRepository.removeMany([created.id, 'id-fantasma']),
+    ).not.toThrow();
+    expect(movementsRepository.getAll()).toHaveLength(0);
+  });
 });

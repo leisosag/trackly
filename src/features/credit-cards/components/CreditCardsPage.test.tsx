@@ -315,4 +315,71 @@ describe('CreditCardsPage', () => {
       screen.queryByText(/Recordá actualizar la fecha de cierre/),
     ).not.toBeInTheDocument();
   });
+
+  it('al tocar la cuota 1 de una compra en tarjeta, abre el modal de edición', async () => {
+    seedMovements();
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(screen.getByText('Comida'));
+
+    expect(screen.getByText('Editar compra')).toBeInTheDocument();
+  });
+
+  it('al tocar una cuota que no es la raíz, avisa y no abre el modal de edición', async () => {
+    localStorage.setItem(
+      'movements',
+      JSON.stringify([
+        {
+          id: '1',
+          categoryId: 'shopping',
+          amount: 100,
+          date: '2026-07-05T10:00:00.000Z',
+          paymentMethodId: 'default-card',
+          statementPeriod: '2026-07',
+          installment: { groupId: 'g1', number: 2, total: 3 },
+        },
+      ]),
+    );
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(screen.getByText('Compras'));
+
+    expect(screen.queryByText('Editar compra')).not.toBeInTheDocument();
+  });
+
+  it('permite editar la cuota raíz y actualiza el total del período mostrado', async () => {
+    seedMovements();
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(screen.getByText('Comida'));
+    await user.click(screen.getByRole('button', { name: /editar/i }));
+
+    // borra "100" y carga un nuevo monto vía calculadora
+    await user.click(screen.getByText('⌫'));
+    await user.click(screen.getByText('⌫'));
+    await user.click(screen.getByText('⌫'));
+    await user.click(screen.getByText('2'));
+    await user.click(screen.getByText('0'));
+    await user.click(screen.getByText('0'));
+    await user.click(screen.getByRole('button', { name: /guardar/i }));
+
+    expect(await screen.findByText('Compra actualizada')).toBeInTheDocument();
+    expect(screen.getByTestId('credit-cards-total')).toHaveTextContent('200');
+  });
+
+  it('permite eliminar la cuota raíz mediante el modal de confirmación', async () => {
+    seedMovements();
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(screen.getByText('Comida'));
+    await user.click(screen.getByRole('button', { name: /eliminar/i }));
+    await user.click(screen.getByRole('button', { name: /sí, eliminar/i }));
+
+    expect(await screen.findByText('Compra eliminada')).toBeInTheDocument();
+    expect(screen.queryByText('Comida')).not.toBeInTheDocument();
+  });
 });

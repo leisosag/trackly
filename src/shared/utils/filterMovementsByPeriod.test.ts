@@ -53,4 +53,23 @@ describe('filterMovementsByPeriod', () => {
 
     expect(result).toEqual([]);
   });
+
+  it('excluye movimientos pagados con tarjeta de crédito aunque su fecha caiga en el mes de referencia', () => {
+    const creditMovement: Movement = {
+      id: '5',
+      categoryId: 'shopping',
+      amount: 300,
+      date: '2026-07-10T10:00:00.000Z',
+      paymentMethodId: 'default-card',
+      statementPeriod: '2026-07',
+      installment: { groupId: 'g1', number: 1, total: 1 },
+    };
+
+    const result = filterMovementsByPeriod(
+      [...movements, creditMovement],
+      referenceDate,
+    );
+
+    expect(result.find((m) => m.id === '5')).toBeUndefined();
+  });
 });

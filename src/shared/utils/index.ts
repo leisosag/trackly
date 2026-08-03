@@ -31,3 +31,4 @@ export { filterMovementsByCategories } from './filterMovementsByCategories';
 export { filterMovementsByPaymentMethods } from './filterMovementsByPaymentMethods';
 export { applyMovementFilters } from './applyMovementFilters';
 export { formatMovementFiltersDescription } from './formatMovementFiltersDescription';
+export { excludeCreditCardMovements } from './excludeCreditCardMovements';

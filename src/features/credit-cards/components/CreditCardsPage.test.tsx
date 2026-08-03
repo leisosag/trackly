@@ -382,4 +382,104 @@ describe('CreditCardsPage', () => {
     expect(await screen.findByText('Compra eliminada')).toBeInTheDocument();
     expect(screen.queryByText('Comida')).not.toBeInTheDocument();
   });
+
+  it('abre el modal de filtro por categoría al tocar el ícono de filtrar', async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Filtrar por categoría' }),
+    ).toBeInTheDocument();
+  });
+
+  it('filtra por categoría y suma el total incluyendo cuotas de compras de otro mes', async () => {
+    localStorage.setItem(
+      'movements',
+      JSON.stringify([
+        {
+          id: '1',
+          categoryId: 'food',
+          amount: 100,
+          date: '2026-07-05T10:00:00.000Z',
+          paymentMethodId: 'default-card',
+          statementPeriod: '2026-07',
+          installment: { groupId: 'g1', number: 1, total: 1 },
+        },
+        {
+          id: '2',
+          categoryId: 'food',
+          amount: 50,
+          date: '2026-06-10T10:00:00.000Z', // compra de junio, 2da cuota factura en julio
+          paymentMethodId: 'default-card',
+          statementPeriod: '2026-07',
+          installment: { groupId: 'g2', number: 2, total: 2 },
+        },
+        {
+          id: '3',
+          categoryId: 'transport',
+          amount: 30,
+          date: '2026-07-06T10:00:00.000Z',
+          paymentMethodId: 'default-card',
+          statementPeriod: '2026-07',
+          installment: { groupId: 'g3', number: 1, total: 1 },
+        },
+      ]),
+    );
+
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+    await user.click(screen.getByRole('checkbox', { name: 'Comida' }));
+    await user.click(screen.getByRole('button', { name: 'Filtrar' }));
+
+    expect(screen.getByText(/Gasto: 150/)).toBeInTheDocument();
+    expect(screen.queryByText('Transporte')).not.toBeInTheDocument();
+  });
+
+  it('el total del header no se modifica al aplicar el filtro de categoría', async () => {
+    seedMovements();
+    const user = userEvent.setup();
+    renderPage();
+
+    const totalAntes = screen.getByTestId('credit-cards-total').textContent;
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+    await user.click(screen.getByRole('checkbox', { name: 'Comida' }));
+    await user.click(screen.getByRole('button', { name: 'Filtrar' }));
+
+    expect(screen.getByTestId('credit-cards-total').textContent).toBe(
+      totalAntes,
+    );
+  });
+
+  it('permite quitar el filtro de categoría aplicado', async () => {
+    seedMovements();
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(
+      screen.getByRole('button', { name: /filtrar por categoría/i }),
+    );
+    await user.click(screen.getByRole('checkbox', { name: 'Comida' }));
+    await user.click(screen.getByRole('button', { name: 'Filtrar' }));
+
+    expect(
+      screen.getByRole('button', { name: /quitar filtro/i }),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /quitar filtro/i }));
+
+    expect(
+      screen.queryByRole('button', { name: /quitar filtro/i }),
+    ).not.toBeInTheDocument();
+  });
 });

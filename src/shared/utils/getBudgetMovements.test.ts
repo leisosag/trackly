@@ -94,20 +94,20 @@ describe('getBudgetMovements', () => {
     expect(getBudgetMovements(budget, movements, referenceDate)).toEqual([]);
   });
 
-  it('excluye movimientos pagados con tarjeta de crédito, aunque su fecha caiga en el período y su categoría matchee', () => {
-    const general: Budget = {
-      id: 'g',
-      name: 'General',
+  it('incluye una compra con tarjeta de crédito en el mes de su resumen', () => {
+    const foodOnly: Budget = {
+      id: 'f',
+      name: 'Comida',
       amount: 1000,
       period: 'monthly',
-      categoryIds: null,
-      isGeneral: true,
+      categoryIds: ['food'],
+      isGeneral: false,
     };
 
     const creditMovement: Movement = {
       id: '5',
-      categoryId: 'shopping',
-      amount: 1000,
+      categoryId: 'food',
+      amount: 400,
       date: '2026-07-10T10:00:00.000Z',
       paymentMethodId: 'default-card',
       statementPeriod: '2026-07',
@@ -115,11 +115,11 @@ describe('getBudgetMovements', () => {
     };
 
     const result = getBudgetMovements(
-      general,
-      [...movements, creditMovement],
+      foodOnly,
+      [creditMovement],
       referenceDate,
     );
 
-    expect(result.find((m) => m.id === '5')).toBeUndefined();
+    expect(result.map((m) => m.id)).toEqual(['5']);
   });
 });

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { budgetsRepository } from './budgetsRepository';
+import type { Budget } from '../types';
 
 describe('budgetsRepository', () => {
   beforeEach(() => {
@@ -76,4 +77,48 @@ describe('budgetsRepository', () => {
 
     expect(budgetsRepository.getAll()).toHaveLength(0);
   });
+
+  const food: Omit<Budget, 'id'> = {
+    name: 'Comida', amount: 100000, period: 'monthly',
+    categoryIds: ['food'], isGeneral: false,
+  };
+
+  it('copia el mes anterior y aísla las ediciones y eliminaciones por mes', () => {
+    const november = budgetsRepository.create(food, '2026-11');
+    const december = budgetsRepository.getAll('2026-12')[0];
+    expect(december.amount).toBe(100000);
+    expect(december.id).not.toBe(november.id);
+
+    budgetsRepository.update(december.id, { ...food, amount: 120000 }, '2026-12');
+    expect(budgetsRepository.getAll('2026-11')).toEqual([november]);
+    expect(budgetsRepository.getAll('2026-12')[0].amount).toBe(120000);
+    expect(budgetsRepository.getAll('2027-01')[0].amount).toBe(120000);
+
+    budgetsRepository.remove(december.id, '2026-12');
+    expect(budgetsRepository.getAll('2026-12')).toEqual([]);
+    expect(budgetsRepository.getAll('2026-11')).toEqual([november]);
+    expect(budgetsRepository.getAll('2027-01')[0].amount).toBe(120000);
+  });
+
+  it('conserva los presupuestos existentes como base sin alterar el historial al navegar hacia atrás', () => {
+    const legacy = budgetsRepository.create(food);
+    const december = budgetsRepository.getAll('2026-12')[0];
+    budgetsRepository.update(december.id, { ...food, amount: 120000 }, '2026-12');
+
+    expect(budgetsRepository.getAll('2026-11')[0].amount).toBe(100000);
+    expect(budgetsRepository.getAll()).toEqual([legacy]);
+    expect(budgetsRepository.getAll('2026-12')[0].amount).toBe(120000);
+  });
+
+  it('mantiene un presupuesto general independiente por mes', () => {
+    const general = { ...food, name: 'General', isGeneral: true, categoryIds: null };
+    budgetsRepository.create(general, '2026-11');
+    const december = budgetsRepository.getGeneral('2026-12')!;
+    budgetsRepository.update(december.id, { ...general, amount: 120000 }, '2026-12');
+
+    expect(budgetsRepository.getGeneral('2026-11')?.amount).toBe(100000);
+    expect(budgetsRepository.getGeneral('2026-12')?.amount).toBe(120000);
+    expect(() => budgetsRepository.create(general, '2026-12')).toThrow();
+  });
+
 });

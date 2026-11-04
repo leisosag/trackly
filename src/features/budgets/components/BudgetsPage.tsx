@@ -6,10 +6,17 @@ import { Fab, Modal } from '@/shared/components';
 import type { Budget } from '../types';
 import { useBudgets } from '../hooks/useBudgets';
 import { BudgetList } from './BudgetList';
+import { useSelectedMonth } from '@/shared/context';
+import { dateToPeriod } from '@/shared/utils/statementPeriod';
 
 type FormState = { mode: 'create' } | { mode: 'edit'; budget: Budget };
 
 export function BudgetsPage() {
+  const { selectedDate } = useSelectedMonth();
+  return <MonthlyBudgetsPage key={dateToPeriod(selectedDate)} />;
+}
+
+function MonthlyBudgetsPage() {
   const { movements } = useMovements();
   const { budgets, addBudget, updateBudget, removeBudget } = useBudgets();
 

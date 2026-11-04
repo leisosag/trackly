@@ -38,10 +38,10 @@ const movements: Movement[] = [
 ];
 
 describe('getBudgetMovements', () => {
-  it.each([false, true])('imputa solo la cuota del resumen seleccionado (general: %s)', (isGeneral) => {
+  it('imputa solo la cuota del resumen seleccionado en presupuestos por categoría', () => {
     const budget: Budget = {
       id: 'b', name: 'Presupuesto', amount: 1000, period: 'monthly',
-      categoryIds: isGeneral ? null : ['food'], isGeneral,
+      categoryIds: ['food'], isGeneral: false,
     };
     const installments: Movement[] = ['2026-12', '2027-01', '2027-02'].map((period, index) => ({
       id: `installment-${index}`, categoryId: 'food', amount: 200,
@@ -58,6 +58,30 @@ describe('getBudgetMovements', () => {
       expect(calculateBudgetProgress(budget, installments, selectedDate).spent).toBe(200);
     }
     expect(getBudgetMovements(budget, installments, new Date(2027, 2, 15))).toEqual([]);
+  });
+
+  it.each(['cash', 'debit'])('el general cuenta el pago con %s y excluye las cuotas aunque el pago sea parcial', (paymentMethodId) => {
+    const budget: Budget = {
+      id: 'g', name: 'General', amount: 2000, period: 'monthly',
+      categoryIds: null, isGeneral: true,
+    };
+    const payment: Movement = {
+      id: 'payment', categoryId: 'credit', amount: 300,
+      date: '2026-07-15T10:00:00.000Z', paymentMethodId,
+    };
+    const creditMovements: Movement[] = ['2026-07', '2026-08'].map((statementPeriod, index) => ({
+      id: `credit-${index}`, categoryId: 'food', amount: 600,
+      date: '2026-07-05T10:00:00.000Z', paymentMethodId: 'default-card',
+      statementPeriod, installment: { groupId: 'purchase', number: index + 1, total: 2 },
+    }));
+    const all = [...movements, ...creditMovements, payment, {
+      ...payment, id: 'previous-payment', date: '2026-06-15T10:00:00.000Z',
+    }];
+
+    expect(getBudgetMovements(budget, all, referenceDate).map((m) => m.id)).toEqual(['1', '2', 'payment']);
+    expect(calculateBudgetProgress(budget, all, referenceDate)).toMatchObject({
+      spent: 1200, remaining: 800, percentage: 60,
+    });
   });
 
   it('un presupuesto general incluye todos los gastos del período, sin importar la categoría', () => {

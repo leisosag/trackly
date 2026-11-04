@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { getBudgetMovements } from './getBudgetMovements';
 import type { Budget } from '@/features/budgets';
 import type { Movement } from '@/features/movements';
+import { getCreditCardMovements } from './getCreditCardMovements';
+import { calculateBudgetProgress } from './calculateBudgetProgress';
 
 const referenceDate = new Date('2026-07-15T12:00:00');
 
@@ -36,6 +38,28 @@ const movements: Movement[] = [
 ];
 
 describe('getBudgetMovements', () => {
+  it.each([false, true])('imputa solo la cuota del resumen seleccionado (general: %s)', (isGeneral) => {
+    const budget: Budget = {
+      id: 'b', name: 'Presupuesto', amount: 1000, period: 'monthly',
+      categoryIds: isGeneral ? null : ['food'], isGeneral,
+    };
+    const installments: Movement[] = ['2026-12', '2027-01', '2027-02'].map((period, index) => ({
+      id: `installment-${index}`, categoryId: 'food', amount: 200,
+      date: '2026-12-20T10:00:00.000Z', paymentMethodId: 'default-card',
+      statementPeriod: period,
+      installment: { groupId: 'purchase', number: index + 1, total: 3 },
+    }));
+
+    for (const [index, period] of ['2026-12', '2027-01', '2027-02'].entries()) {
+      const selectedDate = new Date(2026, 11 + index, 15);
+      expect(getBudgetMovements(budget, installments, selectedDate)).toEqual(
+        getCreditCardMovements(installments, period),
+      );
+      expect(calculateBudgetProgress(budget, installments, selectedDate).spent).toBe(200);
+    }
+    expect(getBudgetMovements(budget, installments, new Date(2027, 2, 15))).toEqual([]);
+  });
+
   it('un presupuesto general incluye todos los gastos del período, sin importar la categoría', () => {
     const general: Budget = {
       id: 'g',

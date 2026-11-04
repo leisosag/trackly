@@ -22,6 +22,7 @@ export function getBudgetMovements(
   return movements.filter((m) => {
     // Las cuotas conservan la fecha de compra; se imputan al mes del resumen.
     if (m.statementPeriod !== undefined) {
+      if (budget.isGeneral) return false;
       return m.statementPeriod === statementPeriod && belongsToBudget(m, budget);
     }
     const date = new Date(m.date);
